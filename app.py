@@ -26,11 +26,11 @@ class InputFeatures(BaseModel):
 @app.post("/predict")
 def predict(input: InputFeatures):
     # Validate input shape
-    if not all(len(row) == 1 for row in input.data):
-        raise HTTPException(status_code=422, detail="Each record must have exactly 1 features")
+    if not all(len(row) == 4 for row in input.data):
+        raise HTTPException(status_code=422, detail="Each record must have exactly 4 features")
 
     # prepare DataFrame
-    columns = [f"feature_{i}" for i in range(1)]
+    columns = [f"feature_{i}" for i in range(4)]
     df = pd.DataFrame(input.data, columns=columns)
 
     # run inference
