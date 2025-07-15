@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -43,3 +43,10 @@ jobs:
 
     # - name: Run tests
     #   run: pytest
+  
+  deploy:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy Deploy Step
+        run: echo "🚀 This is a dummy deployment. No real deployment is happening."
