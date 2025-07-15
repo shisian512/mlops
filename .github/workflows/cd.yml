@@ -9,3 +9,12 @@
 #         with:
 #           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
 #           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+
+jobs:
+  deploy:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy Deploy Step
+        run: echo "🚀 This is a dummy deployment. No real deployment is happening."
+

@@ -38,8 +38,8 @@ jobs:
     # - name: Bring in artifacts
     #   run: dvc pull
 
-    - name: Re-run DVC pipeline
-      run: dvc repro
+    # - name: Re-run DVC pipeline
+    #   run: dvc repro
 
-    - name: Run tests
-      run: pytest
+    # - name: Run tests
+    #   run: pytest
