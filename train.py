@@ -24,7 +24,7 @@ with mlflow.start_run() as run:
     y_pred = model.predict(X_test)
     mlflow.log_metrics({"mse": mean_squared_error(y_test, y_pred)})
 
-    # Log the sklearn model and register as version 1
+    # Log the sklearn model and register
     mlflow.sklearn.log_model(
         sk_model=model,
         name="sklearn-model",
