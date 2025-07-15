@@ -1,0 +1,20 @@
+stages:
+  prepare:
+    cmd: python prepare.py
+    deps:
+    - data/train.csv
+    - prepare.py
+    outs:
+    - data/prepared.csv
+  train:
+    cmd: python train.py
+    deps:
+    - data/prepared.csv
+    - train.py
+    params:
+    - train.max_depth
+    outs:
+    - model.pkl
+    metrics:
+    - metrics.json:
+        cache: false
