@@ -1,8 +1,9 @@
 aliases:
   best_model: '3'
+  the_best_model_ever: '4'
 creation_timestamp: 1752562490430
 deployment_job_id: null
 deployment_job_state: null
 description: ''
-last_updated_timestamp: 1752562848671
+last_updated_timestamp: 1752563614380
 name: sk-learn-random-forest-reg-model

@@ -3,15 +3,26 @@ from pydantic import BaseModel
 from typing import List
 import mlflow.sklearn
 import pandas as pd
+from mlflow import MlflowClient
+
+client = MlflowClient()
 
 mlflow.set_tracking_uri('http://localhost:5000')
 
-# Define model name and version from MLflow Model Registry
+# Set model version alias
 model_name = "sk-learn-random-forest-reg-model"
-model_version = "latest"  # You can also use a specific version number or stage like "Production"
+model_version_alias = "the_best_model_ever"
+client.set_registered_model_alias(
+    model_name, model_version_alias, "4"
+)  # Duplicate of step in UI
 
-# Load the model from the registry
-model_uri = f"models:/{model_name}/{model_version}"
+# Get information about the model
+model_info = client.get_model_version_by_alias(model_name, model_version_alias)
+model_tags = model_info.tags
+print(model_tags)
+
+# Get the model version using a model URI
+model_uri = f"models:/{model_name}@{model_version_alias}"
 model = mlflow.sklearn.load_model(model_uri)
 
 # Initialize FastAPI app
