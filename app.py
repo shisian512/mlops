@@ -18,8 +18,10 @@ model = mlflow.sklearn.load_model(model_uri)
 
 app = FastAPI()
 
+
 class InputFeatures(BaseModel):
     data: List[List[float]]
+
 
 @app.middleware("http")
 async def log_requests_and_latency(request: Request, call_next):
@@ -34,6 +36,7 @@ async def log_requests_and_latency(request: Request, call_next):
     logger.info(f"{request.method} {request.url.path} completed in {duration:.2f}ms")
     response.headers["X-Process-Time-ms"] = f"{duration:.2f}"
     return response
+
 
 @app.post("/predict")
 def predict(input: InputFeatures):
