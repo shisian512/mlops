@@ -1,0 +1,29 @@
+services:
+  # mlflow:
+  #   image: ghcr.io/mlflow/mlflow:latest
+  #   container_name: mlflow
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     - ./mlruns:/mlruns
+  #   command: mlflow server --host 0.0.0.0 --port 5000
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    depends_on:
+      - mlflow
+    ports:
+      - "8000:8000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    depends_on:
+      - backend
+    ports:
+      - "8501:8501"

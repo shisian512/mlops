@@ -23,21 +23,6 @@ class InputFeatures(BaseModel):
     data: List[List[float]]
 
 
-@app.middleware("http")
-async def log_requests_and_latency(request: Request, call_next):
-    start = time.perf_counter()
-    try:
-        response = await call_next(request)
-    except Exception as e:
-        duration = (time.perf_counter() - start) * 1000
-        logger.error(f"Error at {request.method} {request.url.path} in {duration:.2f}ms: {e}")
-        raise
-    duration = (time.perf_counter() - start) * 1000
-    logger.info(f"{request.method} {request.url.path} completed in {duration:.2f}ms")
-    response.headers["X-Process-Time-ms"] = f"{duration:.2f}"
-    return response
-
-
 @app.post("/predict")
 def predict(input: InputFeatures):
     # Validate input shape
