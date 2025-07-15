@@ -10,7 +10,8 @@ import pandas as pd
 # logger = logging.getLogger("mlops_app")
 
 # set MLflow tracking
-mlflow.set_tracking_uri("http://mlflow:5000")
+# mlflow.set_tracking_uri("http://mlflow:5000")
+mlflow.set_tracking_uri("http://localhost:5000")
 model_name = "sk-learn-random-forest-reg-model"
 model_uri = f"models:/{model_name}@production"
 model = mlflow.sklearn.load_model(model_uri)
@@ -25,11 +26,11 @@ class InputFeatures(BaseModel):
 @app.post("/predict")
 def predict(input: InputFeatures):
     # Validate input shape
-    if not all(len(row) == 4 for row in input.data):
-        raise HTTPException(status_code=422, detail="Each record must have exactly 4 features")
+    if not all(len(row) == 1 for row in input.data):
+        raise HTTPException(status_code=422, detail="Each record must have exactly 1 features")
 
     # prepare DataFrame
-    columns = [f"feature_{i}" for i in range(4)]
+    columns = [f"feature_{i}" for i in range(1)]
     df = pd.DataFrame(input.data, columns=columns)
 
     # run inference
