@@ -10,7 +10,7 @@ model_name = "sk-learn-random-forest-reg-model"
 model_version = "latest"
 
 # Load the model from the Model Registry
-model_uri = f"models:/{model_name}/{model_version}"
+model_uri = f"models:/{model_name}@production"
 model = mlflow.sklearn.load_model(model_uri)
 
 # Initialize FastAPI app
