@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/0/7ecc575ce85347ed86db402367028ae4/artifacts
+end_time: 1752562759516
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 7ecc575ce85347ed86db402367028ae4
+run_name: powerful-sponge-268
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752562751010
+status: 3
+tags: []
+user_id: pc

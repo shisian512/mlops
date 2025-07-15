@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/0/84f0d6c9ab3c42a4b39e7fda5c6ddd60/artifacts
+end_time: 1752562436825
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 84f0d6c9ab3c42a4b39e7fda5c6ddd60
+run_name: agreeable-gnat-389
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752562432048
+status: 4
+tags: []
+user_id: pc
