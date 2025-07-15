@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import mlflow
 import mlflow.sklearn
+import json
 
 # mlflow.set_tracking_uri('http://mlflow:5000')
 mlflow.set_tracking_uri('http://localhost:5000')
@@ -24,8 +25,13 @@ with mlflow.start_run():
     mlflow.log_params(params)
 
     y_pred = model.predict(X_test)
-    mlflow.log_metrics({"mse": mean_squared_error(y_test, y_pred)})
+    mse_value = mean_squared_error(y_test, y_pred)
+    mlflow.log_metrics({"mse": mse_value})
 
+    with open("metrics.json", "w") as f:
+        json.dump({"mse": mse_value}, f)
+    print("Saved metrics.json:", mse_value)
+    
     # Log the sklearn model and register
     mlflow.sklearn.log_model(
         sk_model=model,

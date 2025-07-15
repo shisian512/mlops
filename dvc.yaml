@@ -13,8 +13,6 @@ stages:
     - train.py
     params:
     - train.max_depth
-    outs:
-    - model.pkl
     metrics:
     - metrics.json:
         cache: false
