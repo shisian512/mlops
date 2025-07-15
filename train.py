@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import mlflow
 import mlflow.sklearn
 
-mlflow.set_tracking_uri('http://localhost:5000')
+mlflow.set_tracking_uri('http://mlflow:5000')
 
 with mlflow.start_run() as run:
     X, y = make_regression(n_features=4, n_informative=2, random_state=0, shuffle=False)

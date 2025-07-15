@@ -1,12 +1,30 @@
+version: "3"
 services:
-  # mlflow:
-  #   image: ghcr.io/mlflow/mlflow:latest
-  #   container_name: mlflow
-  #   ports:
-  #     - "5000:5000"
-  #   volumes:
-  #     - ./mlruns:/mlruns
-  #   command: mlflow server --host 0.0.0.0 --port 5000
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow
+      POSTGRES_DB: mlflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow-artifacts:/mlflow/artifacts
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri postgresql://mlflow:mlflow@postgres:5432/mlflow_db
+      --artifacts-destination /mlflow/artifacts
+    depends_on:
+      - postgres
 
   backend:
     build:
@@ -17,7 +35,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MLFLOW_TRACKING_URI=http://localhost:5000
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
 
   frontend:
     build:
