@@ -14,10 +14,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
+    - name: Setup Python
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: '3.10'
+
+    - name: Setup DVC
+      uses: iterative/setup-dvc@v2
 
     - name: Install dependencies
       run: |
@@ -29,6 +32,9 @@ jobs:
     #   run: |
     #     flake8 . --count --max-line-length=127
 
+    - name: Check DVC version
+      run: dvc --version
+      
     - name: Bring in artifacts
       run: dvc pull
 
