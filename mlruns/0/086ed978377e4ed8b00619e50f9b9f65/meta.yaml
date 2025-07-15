@@ -1,0 +1,14 @@
+artifact_uri: mlflow-artifacts:/0/086ed978377e4ed8b00619e50f9b9f65/artifacts
+end_time: 1752577439499
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 086ed978377e4ed8b00619e50f9b9f65
+run_name: rebellious-koi-629
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1752577431898
+status: 3
+tags: []
+user_id: pc
