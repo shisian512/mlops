@@ -6,7 +6,7 @@ import pandas as pd
 import mlflow
 import mlflow.sklearn
 import json
-
+import joblib
 # mlflow.set_tracking_uri('http://mlflow:5000')
 mlflow.set_tracking_uri('http://localhost:5000')
 df = pd.read_csv("data/prepared.csv")
@@ -20,7 +20,7 @@ with mlflow.start_run():
     params = {"max_depth": 2, "random_state": 42}
     model = RandomForestRegressor(**params)
     model.fit(X_train, y_train)
-
+    joblib.dump(model, "model.pkl")
     # Log parameters and metrics using the MLflow APIs
     mlflow.log_params(params)
 
