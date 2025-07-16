@@ -210,3 +210,5 @@ __marimo__/
 # MLflow artifacts and logs
 mlruns/
 mlartifacts/
+
+data/prepared.csv
