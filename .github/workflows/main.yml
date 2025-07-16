@@ -34,6 +34,16 @@ jobs:
 
     - name: Check cache consistency
       run: dvc status -c
+      
+    - name: Start MLflow Tracking Server
+      run: |
+        mlflow server \
+          --backend-store-uri sqlite:///mlflow.db \
+          --default-artifact-root ./mlruns \
+          --host 127.0.0.1 \
+          --port 5000 &
+        # wait for server to start
+        sleep 5
 
     - name: Reproduce with pull
       run: dvc repro --pull
