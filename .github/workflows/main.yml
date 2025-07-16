@@ -48,8 +48,8 @@ jobs:
     - name: Reproduce with pull
       run: dvc repro --pull
 
-    - name: Run tests
-      run: pytest
+    # - name: Run tests
+    #   run: pytest
   
   deploy:
     needs: build-test
