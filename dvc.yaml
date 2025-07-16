@@ -11,6 +11,7 @@ stages:
     deps:
     - data/prepared.csv
     - train.py
+    - params.yaml
     params:
     - train.max_depth
     outs:
