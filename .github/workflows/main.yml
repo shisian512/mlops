@@ -55,5 +55,45 @@ jobs:
     needs: build-test
     runs-on: ubuntu-latest
     steps:
-      - name: Dummy Deploy Step
-        run: echo "🚀 This is a dummy deployment. No real deployment is happening."
+      - name: Checkout code
+        uses: actions/checkout@v3
+  
+      - name: Setup Python & install deps
+        run: |
+          pip install -r requirements.txt
+          pip install uvicorn streamlit requests pytest
+  
+      - name: Start Uvicorn in background
+        run: |
+          uvicorn app:app --host 127.0.0.1 --port 8000 &
+          echo $! > uvicorn.pid
+          sleep 5
+  
+      - name: Start Streamlit in background
+        run: |
+          streamlit run ui.py --server.headless true --server.port 8501 &
+          echo $! > streamlit.pid
+          sleep 5
+  
+      - name: Test FastAPI health
+        run: |
+          pip install requests
+          python - <<EOF
+          import requests
+          resp = requests.get("http://127.0.0.1:8000/health")
+          assert resp.status_code == 200
+          EOF
+        
+      - name: Test Streamlit UI page loads
+        run: |
+          pip install requests
+          python - <<EOF
+          import requests
+          resp = requests.get("http://127.0.0.1:8501")
+          assert resp.status_code == 200
+          EOF
+
+      - name: Teardown servers
+        run: |
+          kill $(cat uvicorn.pid) || true
+          kill $(cat streamlit.pid) || true
