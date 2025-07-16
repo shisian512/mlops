@@ -77,7 +77,6 @@ jobs:
   
       - name: Test FastAPI health
         run: |
-          pip install requests
           python - <<EOF
           import requests
           resp = requests.get("http://127.0.0.1:8000/health")
@@ -86,7 +85,6 @@ jobs:
         
       - name: Test Streamlit UI page loads
         run: |
-          pip install requests
           python - <<EOF
           import requests
           resp = requests.get("http://127.0.0.1:8501")
