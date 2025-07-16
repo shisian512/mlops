@@ -46,7 +46,7 @@ jobs:
         sleep 5
 
     - name: Reproduce with pull
-      run: dvc repro --pull
+      run: dvc repro --pull --force
 
     # - name: Run tests
     #   run: pytest
