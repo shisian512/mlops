@@ -6,6 +6,7 @@ import mlflow
 import mlflow.sklearn
 import json
 import joblib
+import yaml
 
 # Use Mlflow autologging to automatically log parameters, metrics, and models
 mlflow.sklearn.autolog()
@@ -24,7 +25,9 @@ X, y, test_size=0.2, random_state=42
 # Train the model and log parameters, metrics, and model artifacts using MLflow
 with mlflow.start_run():
     # Define the model parameters and train the model
-    params = {"max_depth": 2, "random_state": 42}
+    with open("params.yaml") as f:
+        cfg = yaml.safe_load(f)
+    params = cfg["train"]
     model = RandomForestRegressor(**params)
     model.fit(X_train, y_train)
     
