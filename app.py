@@ -13,7 +13,7 @@ import pandas as pd
 # mlflow.set_tracking_uri("http://mlflow:5000")
 mlflow.set_tracking_uri("http://localhost:5000")
 model_name = "sk-learn-random-forest-reg-model"
-model_uri = f"models:/{model_name}@production"
+model_uri = f"models:/{model_name}/v1"
 model = mlflow.sklearn.load_model(model_uri)
 
 app = FastAPI()
