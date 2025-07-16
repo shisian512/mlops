@@ -69,13 +69,13 @@ jobs:
   
       - name: Start Streamlit UI
         run: |
-          streamlit run ui.py --server.headless true --server.port 8501 &
+          python -m streamlit run ui.py --server.headless true --server.port 8501 &
           echo $! > streamlit.pid
           sleep 10
   
-          - name: Health-check FastAPI
-          run: |
-            python - <<EOF
+      - name: Health-check FastAPI
+        run: |
+          python - <<EOF
           import requests, time
           for _ in range(5):
               try:
@@ -87,7 +87,7 @@ jobs:
               time.sleep(2)
           raise RuntimeError("FastAPI health check failed")
           EOF
-        
+          
       - name: Smoke-test Streamlit
         run: |
           python - <<EOF
