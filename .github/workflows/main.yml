@@ -65,13 +65,13 @@ jobs:
         run: |
           uvicorn app:app --host 127.0.0.1 --port 8000 &
           echo $! > uvicorn.pid
-          sleep 10
+          sleep 60
   
       - name: Start Streamlit UI
         run: |
           python -m streamlit run ui.py --server.headless true --server.port 8501 &
           echo $! > streamlit.pid
-          sleep 10
+          sleep 60
   
       - name: Health-check FastAPI
         run: |
