@@ -25,17 +25,17 @@ stages:
       size: 22896
     - path: train.py
       hash: md5
-      md5: cce6cfc4bfd41b51a4e918633bcee8b8
-      size: 1678
+      md5: 0f8891cd47e7f599ea9af0417f17f5bc
+      size: 1650
     params:
       params.yaml:
-        train.max_depth: 2
+        train.max_depth:
     outs:
     - path: metrics.json
       hash: md5
-      md5: a523c1dca8560949b21f286e65a478b1
-      size: 26
+      md5: 5820a64e5c123c93394f6ca8e67763b8
+      size: 27
     - path: model.pkl
       hash: md5
-      md5: 8970bbc11804f4aacfa3e55d51e067f2
-      size: 83237
+      md5: 92c4d2dd27625e11484ef750ea31af3a
+      size: 1445925

@@ -2,11 +2,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 import pandas as pd
-import mlflow
-import mlflow.sklearn
-import json
-import joblib
-import yaml
+import yaml, mlflow, mlflow.sklearn, joblib, json
 
 # Use Mlflow autologging to automatically log parameters, metrics, and models
 mlflow.sklearn.autolog()
