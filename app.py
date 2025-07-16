@@ -10,8 +10,8 @@ import pandas as pd
 # logger = logging.getLogger("mlops_app")
 
 # set MLflow tracking
-# mlflow.set_tracking_uri("http://mlflow:5000")
-mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_tracking_uri("http://mlflow:5000")
+# mlflow.set_tracking_uri("http://localhost:5000")
 model_name = "sk-learn-random-forest-reg-model"
 model_uri = f"models:/{model_name}"
 model = mlflow.sklearn.load_model(model_uri)
