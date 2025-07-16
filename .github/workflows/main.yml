@@ -36,7 +36,7 @@ jobs:
       run: dvc --version
 
     - name: Bring in artifacts
-      run: dvc pull
+      run: dvc pull --force
 
     - name: Re-run DVC pipeline
       run: dvc repro
