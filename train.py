@@ -5,6 +5,8 @@ import pandas as pd
 import yaml, mlflow, mlflow.sklearn, joblib, json
 
 # Use Mlflow autologging to automatically log parameters, metrics, and models
+# Set experiment name to avoid 'experiment ID 0 not found' error
+mlflow.set_experiment("regression_experiment")
 mlflow.sklearn.autolog()
 
 # Load the prepared dataset
