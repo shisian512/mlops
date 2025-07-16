@@ -8,7 +8,7 @@ import mlflow.sklearn
 import json
 import joblib
 mlflow.set_tracking_uri('http://mlflow:5000')
-# mlflow.set_tracking_uri('http://localhost:5000')
+# mlflow.set_tracking_uri('http://192.168.0.124:5000')
 df = pd.read_csv("data/prepared.csv")
 X = df[['x']]
 y = df['y']
