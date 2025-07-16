@@ -5,8 +5,8 @@ stages:
     deps:
     - path: data/train.csv
       hash: md5
-      md5: 19cd73f2e80053fe573f660bab390bc4
-      size: 10384
+      md5: 8eddd3e632d89ebd0e752e22d2801806
+      size: 17288
     - path: prepare.py
       hash: md5
       md5: 5150a3ef801fd6a830e6ee6eb33d9a25
@@ -14,28 +14,28 @@ stages:
     outs:
     - path: data/prepared.csv
       hash: md5
-      md5: 380a2b713aa9740b9c445226cdab0195
-      size: 12501
+      md5: 384844e6edd311dda2c30c9b653bb647
+      size: 22896
   train:
     cmd: python train.py
     deps:
     - path: data/prepared.csv
       hash: md5
-      md5: 380a2b713aa9740b9c445226cdab0195
-      size: 12501
+      md5: 384844e6edd311dda2c30c9b653bb647
+      size: 22896
     - path: train.py
       hash: md5
-      md5: 89bb79552e747505b9cafe3c85c4ff8c
-      size: 1335
+      md5: c7240f5d1ecec97255fa62bc42e72ac4
+      size: 1620
     params:
       params.yaml:
         train.max_depth: 2
     outs:
     - path: metrics.json
       hash: md5
-      md5: e0fc3fc64635b6940f32fa5adc1e4547
+      md5: a39dcba98149d0a46e81a9d31898d005
       size: 27
     - path: model.pkl
       hash: md5
-      md5: a18f12abc48a2d047574c22d301cf15a
-      size: 83153
+      md5: 05b94c6d195ebe95b68d592360151b8e
+      size: 83237

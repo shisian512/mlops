@@ -1,4 +1,3 @@
-from sklearn.datasets import make_regression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -7,27 +6,36 @@ import mlflow
 import mlflow.sklearn
 import json
 import joblib
-# mlflow.set_tracking_uri('http://mlflow:5000')
-mlflow.set_tracking_uri('http://localhost:5000')
+
+# Use Mlflow autologging to automatically log parameters, metrics, and models
+mlflow.sklearn.autolog()
+
+# Load the prepared dataset
 df = pd.read_csv("data/prepared.csv")
-X = df[['x']]
+feature_cols = ['feature_0','feature_1','feature_2','feature_3']
+X = df[feature_cols]
 y = df['y']
+
+# Split the dataset into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(
 X, y, test_size=0.2, random_state=42
 )
 
+# Train the model and log parameters, metrics, and model artifacts using MLflow
 with mlflow.start_run():
+    # Define the model parameters and train the model
     params = {"max_depth": 2, "random_state": 42}
     model = RandomForestRegressor(**params)
     model.fit(X_train, y_train)
+    
+    # Save the model using joblib
     joblib.dump(model, "model.pkl")
-    # Log parameters and metrics using the MLflow APIs
-    mlflow.log_params(params)
 
-    y_pred = model.predict(X_test)
-    mse_value = mean_squared_error(y_test, y_pred)
-    mlflow.log_metrics({"mse": mse_value})
+    # Example of logging custom parameters
+    mse_value = mean_squared_error(y_test, model.predict(X_test))
+    mlflow.log_metric("mse_custom", mse_value)
 
+    # Log the model metrics in json, for DVC repro
     with open("metrics.json", "w") as f:
         json.dump({"mse": mse_value}, f)
     print("Saved metrics.json:", mse_value)
@@ -35,7 +43,7 @@ with mlflow.start_run():
     # Log the sklearn model and register
     mlflow.sklearn.log_model(
         sk_model=model,
-        name="sklearn-model",
-        input_example=X_train,
-        registered_model_name="sk-learn-random-forest-reg-model",
+        name="regression_model",
+        input_example=X_train.iloc[:5],
+        registered_model_name="regression_model",
     )
