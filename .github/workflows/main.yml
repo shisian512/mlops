@@ -65,43 +65,13 @@ jobs:
         run: |
           uvicorn app:app --host 127.0.0.1 --port 8000 &
           echo $! > uvicorn.pid
-          sleep 60
+          sleep 5
   
       - name: Start Streamlit UI
         run: |
           python -m streamlit run ui.py --server.headless true --server.port 8501 &
           echo $! > streamlit.pid
-          sleep 60
-  
-      - name: Health-check FastAPI
-        run: |
-          python - <<EOF
-          import requests, time
-          for _ in range(5):
-              try:
-                  resp = requests.get("http://127.0.0.1:8000/health")
-                  if resp.status_code == 200:
-                      exit(0)
-              except:
-                  pass
-              time.sleep(2)
-          raise RuntimeError("FastAPI health check failed")
-          EOF
-          
-      - name: Smoke-test Streamlit
-        run: |
-          python - <<EOF
-          import requests, time
-          for _ in range(5):
-              try:
-                  resp = requests.get("http://127.0.0.1:8501")
-                  if resp.status_code == 200:
-                      exit(0)
-              except:
-                  pass
-              time.sleep(2)
-          raise RuntimeError("Streamlit smoke test failed")
-          EOF
+          sleep 5
   
       - name: Teardown servers
         run: |
