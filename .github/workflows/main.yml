@@ -32,17 +32,14 @@ jobs:
     #   run: |
     #     flake8 . --count --max-line-length=127
 
-    - name: Check DVC version
-      run: dvc --version
+    - name: Check cache consistency
+      run: dvc status -c
 
-    - name: Bring in artifacts
-      run: dvc pull --force
+    - name: Reproduce with pull
+      run: dvc repro --pull
 
-    - name: Re-run DVC pipeline
-      run: dvc repro
-
-    # - name: Run tests
-    #   run: pytest
+    - name: Run tests
+      run: pytest
   
   deploy:
     needs: build-test
