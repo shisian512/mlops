@@ -210,5 +210,3 @@ __marimo__/
 # MLflow artifacts and logs
 mlruns/
 mlartifacts/
-
-dvc-storage/
