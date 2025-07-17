@@ -9,8 +9,8 @@ stages:
       size: 17288
     - path: prepare.py
       hash: md5
-      md5: 5150a3ef801fd6a830e6ee6eb33d9a25
-      size: 140
+      md5: cc3709e44c814710ee797c57e1a6d494
+      size: 3150
     outs:
     - path: data/prepared.csv
       hash: md5
@@ -25,21 +25,40 @@ stages:
       size: 22896
     - path: params.yaml
       hash: md5
-      md5: 785698e4de1125cd972fb3c95bda9315
-      size: 378
+      md5: 57839072fe37c3fa2197b32df4ac48ef
+      size: 2298
     - path: train.py
       hash: md5
-      md5: 0f8891cd47e7f599ea9af0417f17f5bc
-      size: 1650
+      md5: 951d9405deb6476312fe4b62ff0d7d88
+      size: 6608
     params:
       params.yaml:
-        train.max_depth:
+        data.random_state: 42
+        data.test_size: 0.2
+        model.hyperparams:
+          n_estimators: 100
+          bootstrap: true
+          n_jobs: -1
+          random_state: 42
+          max_depth:
+          min_samples_split: 2
+          min_samples_leaf: 1
+          max_leaf_nodes:
+          max_features: 1.0
+          min_weight_fraction_leaf: 0.0
+          min_impurity_decrease: 0.0
+          ccp_alpha: 0.0
+          max_samples: 5
+        validation:
+          oob_score: false
+          verbose: 0
+          warm_start: false
     outs:
     - path: metrics.json
       hash: md5
-      md5: 9ab980a0258696ad48f061628d043b67
+      md5: a81bc8524d407c60105b06fbf089f7fe
       size: 27
     - path: model.pkl
       hash: md5
-      md5: b29f9b6edd4bd3b6d6175aba1b9045ea
-      size: 1445925
+      md5: e2f2cdda0bc2e88c8022b3c53edffb53
+      size: 96213
