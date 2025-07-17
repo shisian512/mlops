@@ -1,33 +1,66 @@
-version: "3.8"
+version: '3.9'
 services:
+  postgres:
+    image: postgres:15
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "mlflow_user"]
+      interval: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: mlflow_user
+      POSTGRES_PASSWORD: mlflow_pass
+      POSTGRES_DB: mlflow_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
   mlflow:
     build:
       context: .
-      dockerfile: Dockerfile.mlflow
+      dockerfile: Dockerfile.mlflow2
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      MLFLOW_BACKEND_STORE_URI: postgresql://mlflow_user:mlflow_pass@postgres:5432/mlflow_db
+      MLFLOW_ARTIFACT_ROOT: /mlartifacts
     ports:
       - "5000:5000"
     volumes:
-      - ./mlflow-artifacts:/mlartifacts
-    command: mlflow ui --host 0.0.0.0 --port 5000
+      - ./mlartifacts:/mlartifacts
+    command: >
+      mlflow server
+        --backend-store-uri ${MLFLOW_BACKEND_STORE_URI}
+        --default-artifact-root ${MLFLOW_ARTIFACT_ROOT}
+        --host 0.0.0.0 --port 5000
+        --serve-artifacts
 
   backend:
     build:
       context: .
       dockerfile: Dockerfile.fastapi
-    depends_on:
-      - mlflow
+    image: mlops-backend:latest
     ports:
       - "8000:8000"
-    environment:
+    env_file:
       - .env
+    depends_on:
+      - mlflow
+    restart: always
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.streamlit
-    depends_on:
-      - backend
+    image: mlops-frontend:latest
     ports:
       - "8501:8501"
-    environment:
+    env_file:
       - .env
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  pgdata:
