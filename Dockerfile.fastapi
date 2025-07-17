@@ -16,8 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source code
 COPY . .
 
-# # Set environment variables
-# ENV MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI}
-
 EXPOSE 8000
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
