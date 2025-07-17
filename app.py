@@ -8,7 +8,7 @@ import pandas as pd
 model_name = "regression_model"
 # version = "3"
 # model_uri = f"models:/{model_name}/{version}"
-model_uri = f"models:/{model_name}@production"
+model_uri = f"models:/{model_name}@champion"
 model = mlflow.sklearn.load_model(model_uri)
 
 app = FastAPI()
