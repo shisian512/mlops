@@ -1,18 +1,35 @@
-train:
-  n_estimators: 100
-  criterion: "squared_error"
-  max_depth: null
-  min_samples_split: 2
-  min_samples_leaf: 1
-  min_weight_fraction_leaf: 0.0
-  max_features: 1.0
-  max_leaf_nodes: null
-  min_impurity_decrease: 0.0
-  bootstrap: true
-  oob_score: false
-  n_jobs: -1
-  random_state: 42
-  verbose: 0
-  warm_start: false
-  ccp_alpha: 0.0
-  max_samples: null
+# ─── Data Splitting ───────────────────────────────────────
+data:
+  test_size: 0.2       # Proportion of data used for testing (0.0–1.0)
+  random_state: 42     # Random seed for reproducibility
+
+# ─── Model Selection ─────────────────────────────────────
+model:
+  type: RandomForestRegressor
+  hyperparams:
+    # ─── Ensemble & Parallelism ─────────────────────────
+    n_estimators: 100          # Number of trees in the forest
+    bootstrap: true            # Whether bootstrap samples are used
+    n_jobs: -1                 # Number of parallel jobs (-1 uses all cores)
+    random_state: 42           # Random seed for estimator
+
+    # ─── Splitting & Leaf Control ───────────────────────
+    max_depth: ~               # Maximum depth of each tree (None = unlimited)
+    min_samples_split: 2       # Minimum samples to split an internal node
+    min_samples_leaf: 1        # Minimum samples required at a leaf node
+    max_leaf_nodes: ~          # Maximum number of leaf nodes (None = unlimited)
+
+    # ─── Feature & Sample Weight ────────────────────────
+    max_features: 1.0          # Number of features to consider at each split
+    min_weight_fraction_leaf: 0.0  # Minimum weighted fraction of total weight for leaf
+    min_impurity_decrease: 0.0     # Threshold for early stopping splits
+
+    # ─── Pruning & Overfitting Control ──────────────────
+    ccp_alpha: 0.0             # Complexity parameter for cost-complexity pruning
+    max_samples: ~             # Number of samples to draw for each base estimator
+
+# ─── Validation & Monitoring ─────────────────────────────
+validation:
+  oob_score: false   # Whether to use out-of-bag samples to estimate generalization error
+  verbose: 0         # Verbosity level during training
+  warm_start: false  # Reuse the solution of the previous fit to add more estimators
