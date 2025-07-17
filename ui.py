@@ -22,6 +22,7 @@ import os
 # ─── Configuration ─────────────────────────────────────────────────────────────
 load_dotenv()
 API_URL = os.getenv("API_URL")
+# API_URL = "http://192.168.0.124:8000/predict"  # Replace with your API endpoint
 TIMEOUT = 5  # Request timeout in seconds
 FEATURE_PROMPTS = [
     "Feature 0",

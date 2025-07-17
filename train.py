@@ -21,8 +21,6 @@ import json
 import yaml
 import joblib
 import warnings
-from dotenv import load_dotenv
-import os
 
 import pandas as pd
 import mlflow
@@ -47,14 +45,18 @@ MODEL_PICKLE     = "model.pkl"
 FEATURE_COLS     = ['feature_0', 'feature_1', 'feature_2', 'feature_3']
 TARGET_COL       = 'y'
 METRIC_KEY       = "mse_custom"
-load_dotenv()
 
+from dotenv import load_dotenv
+import os
+load_dotenv()
 mlflow_uri = os.getenv("MLFLOW_TRACKING_URI")
 print("MLflow URI is", mlflow_uri)
+mlflow.set_tracking_uri(mlflow_uri)
+
 
 # ─── Setup MLflow ───────────────────────────────────────────────────────────────
 
-mlflow.set_tracking_uri(mlflow_uri)
+
 # Ensure the experiment exists (creates if missing)
 mlflow.set_experiment(EXPERIMENT_NAME)
 # Enable automatic logging of parameters, metrics, and models

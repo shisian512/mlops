@@ -20,8 +20,6 @@ import mlflow.sklearn
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from dotenv import load_dotenv
-import os
 
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
@@ -30,11 +28,13 @@ MODEL_NAME = "regression_model"
 MODEL_ALIAS = "champion"
 MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
 FEATURE_COUNT = 4  # Number of features expected per record
-load_dotenv()
 
+from dotenv import load_dotenv
+import os
+load_dotenv()
 mlflow_uri = os.getenv("MLFLOW_TRACKING_URI")
 print("MLflow URI is", mlflow_uri)
-
+mlflow.set_tracking_uri(mlflow_uri)
 
 # ─── Load Model ────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,6 @@ except Exception as e:
 
 # ─── App Initialization ─────────────────────────────────────────────────────────
 
-mlflow.set_tracking_uri(mlflow_uri)
 app = FastAPI(
     title="ML Regression Prediction API",
     description="Predict endpoint for RandomForest regression model",
