@@ -1,9 +1,24 @@
-FROM ghcr.io/mlflow/mlflow:latest
+FROM python:3.12-slim
 
-USER root
+# Install minimal system dependencies
+RUN apt-get update && \
+    apt-get install -y gcc libpq-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update \
- && apt-get install -y gcc libpq-dev \
- && pip install psycopg2-binary
+# Set working directory
+WORKDIR /app
 
-# USER mlflow
+# Install only required Python packages
+RUN pip install --no-cache-dir mlflow==3.1.1 psycopg2-binary
+
+# Mount mlartifacts folder as a volume (don't bake into image)
+VOLUME ["/app/mlartifacts"]
+
+# Expose the MLflow UI port
+EXPOSE 5000
+
+# Start MLflow UI with PostgreSQL backend and artifact path
+CMD ["mlflow", "ui", \
+     "--default-artifact-root", "/app/mlartifacts", \
+     "--host", "0.0.0.0", "--port", "5000"]
