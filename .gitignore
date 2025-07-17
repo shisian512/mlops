@@ -212,3 +212,5 @@ mlruns/
 mlartifacts/
 
 data/prepared.csv
+metrics.json
+model.pkl

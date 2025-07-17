@@ -45,8 +45,8 @@
 #         # wait for server to start
 #         sleep 5
 
-#     - name: Reproduce with pull
-#       run: dvc repro --pull
+    # - name: Reproduce with pull
+    #   run: dvc repro --pull --force
 
 #     # - name: Run tests
 #     #   run: pytest
