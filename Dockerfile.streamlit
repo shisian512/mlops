@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir \
     python-dotenv==1.0.1
 
 # copy ui.py only
-COPY ui.py .
+COPY src/frontend/ui.py .
 
 EXPOSE 8501
 CMD ["streamlit", "run", "ui.py", "--server.address=0.0.0.0", "--server.port=8501"]

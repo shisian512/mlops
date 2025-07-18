@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir \
     python-dotenv==1.0.1
 
 # Copy project files
-COPY app.py .
+COPY src/api/app.py .
 
 EXPOSE 8000
 
