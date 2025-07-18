@@ -48,12 +48,9 @@ jobs:
         # wait for server to start
         sleep 5
 
-    - name: DVC pull
-      run: dvc pull
-
-    - name: DVC reproduce
-      run: dvc repro
-
+    - name: Reproduce with pull
+      run: dvc repro --pull --force
+      
   deploy:
     needs: build-test
     runs-on: ubuntu-latest
