@@ -1,6 +1,28 @@
 # mlops-complete.yaml
 
-# 1️⃣ MLflow Deployment + Service
+# MLflow Deployment + Service + Persistent Storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlartifacts-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlruns-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +43,11 @@ spec:
         args: ["ui", "--host", "0.0.0.0", "--port", "5000"]
         ports:
         - containerPort: 5000
+        volumeMounts:
+        - name: mlartifacts
+          mountPath: /mlartifacts
+        - name: mlruns
+          mountPath: /mlruns
         resources:
           requests:
             cpu: "100m"
@@ -28,6 +55,13 @@ spec:
           limits:
             cpu: "300m"
             memory: "512Mi"
+      volumes:
+      - name: mlartifacts
+        persistentVolumeClaim:
+          claimName: mlartifacts-pvc
+      - name: mlruns
+        persistentVolumeClaim:
+          claimName: mlruns-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -44,7 +78,7 @@ spec:
 
 ---
 
-# 2️⃣ Backend Deployment + Service
+# Backend Deployment + Service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -74,6 +108,18 @@ spec:
           limits:
             cpu: "300m"
             memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /docs
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /docs
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
 ---
 apiVersion: v1
 kind: Service
@@ -90,7 +136,7 @@ spec:
 
 ---
 
-# 3️⃣ Frontend Deployment + Service
+# Frontend Deployment + Service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -120,6 +166,18 @@ spec:
           limits:
             cpu: "300m"
             memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8501
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8501
+          initialDelaySeconds: 30
+          periodSeconds: 30
 ---
 apiVersion: v1
 kind: Service
@@ -135,6 +193,8 @@ spec:
   type: LoadBalancer
 
 ---
+
+# Backend Autoscaling
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
