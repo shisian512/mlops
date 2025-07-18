@@ -16,9 +16,12 @@ Usage:
 
 import streamlit as st
 import requests
+from dotenv import load_dotenv
+import os
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
-API_URL = "http://localhost:8000/predict"  # Prediction endpoint URL
+load_dotenv()
+API_URL = os.getenv("API_URL")
 TIMEOUT = 5  # Request timeout in seconds
 FEATURE_PROMPTS = [
     "Feature 0",

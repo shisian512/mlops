@@ -214,3 +214,5 @@ mlartifacts/
 data/prepared.csv
 metrics.json
 model.pkl
+
+dvc-storage/

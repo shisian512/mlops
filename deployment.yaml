@@ -1,0 +1,155 @@
+# mlops-complete.yaml
+
+# 1️⃣ MLflow Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow:latest
+        args: ["ui", "--host", "0.0.0.0", "--port", "5000"]
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "300m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+spec:
+  selector:
+    app: mlflow
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+
+---
+
+# 2️⃣ Backend Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlops-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlops-backend
+  template:
+    metadata:
+      labels:
+        app: mlops-backend
+    spec:
+      containers:
+      - name: mlops-backend
+        image: shisian512/mlops-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: MLFLOW_TRACKING_URI
+          value: "http://mlflow:5000"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "300m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlops-backend
+spec:
+  selector:
+    app: mlops-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
+
+---
+
+# 3️⃣ Frontend Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlops-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlops-frontend
+  template:
+    metadata:
+      labels:
+        app: mlops-frontend
+    spec:
+      containers:
+      - name: mlops-frontend
+        image: shisian512/mlops-frontend:latest
+        ports:
+        - containerPort: 8501
+        env:
+        - name: BACKEND_URL
+          value: "http://mlops-backend:8000/predict"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "300m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlops-frontend
+spec:
+  selector:
+    app: mlops-frontend
+  ports:
+    - protocol: TCP
+      port: 8501
+      targetPort: 8501
+  type: LoadBalancer
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mlops-backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mlops-backend
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
