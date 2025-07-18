@@ -26,7 +26,8 @@ mlflow.set_tracking_uri(mlflow_uri)
 try:
     model = mlflow.sklearn.load_model(MODEL_URI)
 except Exception as e:
-    raise RuntimeError(f"Failed to load model at '{MODEL_URI}': {e}")
+    print(f"Warning: Failed to load model at '{MODEL_URI}': {e}")
+    model = None
 
 # ─── App Initialization ─────────────────────────────────────────────────────────
 app = FastAPI(
@@ -42,6 +43,11 @@ class InputFeatures(BaseModel):
 # ─── Prediction Endpoint ───────────────────────────────────────────────────────
 @app.post("/predict")
 def predict(input: InputFeatures):
+    if model is None:
+        raise HTTPException(
+            status_code=503,
+            detail="No model is currently available. Please train and register a model first."
+        )
     # Validate input shape
     for record in input.data:
         if len(record) != FEATURE_COUNT:

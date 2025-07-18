@@ -48,25 +48,16 @@ def render_input_fields() -> list:
 
 
 def get_prediction(features: list) -> float:
-    """
-    Send a POST request to the prediction API with the feature list.
-
-    Args:
-        features: List of float feature values.
-
-    Returns:
-        The predicted value as float.
-
-    Raises:
-        requests.HTTPError: If the HTTP request returned an unsuccessful status code.
-        requests.RequestException: For network-related errors or timeouts.
-    """
-    payload = {"data": [features]}
-    response = requests.post(API_URL, json=payload, timeout=TIMEOUT)
+    import requests
+    response = requests.post(
+        f"{API_URL}",
+        json={"data": [features]},
+        timeout=TIMEOUT
+    )
+    if response.status_code == 503:
+        raise Exception("No model is currently available. Please train and register a model first.")
     response.raise_for_status()
-    result = response.json()
-    # Expecting {'predictions': [value]}
-    return result.get("predictions", [None])[0]
+    return response.json()["predictions"][0]
 
 
 def main():
