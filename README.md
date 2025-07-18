@@ -109,7 +109,6 @@ This will start the following services:
 > **Note:** The backend and frontend containers use images built from `Dockerfile.fastapi` and `Dockerfile.streamlit`.
 
 ---
----
 
 ## Author
 
