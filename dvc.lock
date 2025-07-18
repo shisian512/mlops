@@ -1,13 +1,13 @@
 schema: '2.0'
 stages:
   prepare:
-    cmd: python src/data/prepare.py
+    cmd: python prepare.py
     deps:
     - path: data/train.csv
       hash: md5
       md5: 6dd21096a9461dde61f8a245001c5ee1
       size: 16587
-    - path: src/data/prepare.py
+    - path: prepare.py
       hash: md5
       md5: 0521e91693e20cb8780597f221a42e26
       size: 1423
@@ -17,7 +17,7 @@ stages:
       md5: 0dae78424fb3bb387d39525014495de7
       size: 22195
   train:
-    cmd: python src/services/train.py
+    cmd: python train.py
     deps:
     - path: data/prepared.csv
       hash: md5
@@ -27,7 +27,7 @@ stages:
       hash: md5
       md5: 88802ee83115d0007715aceff53cab83
       size: 2263
-    - path: src/services/train.py
+    - path: train.py
       hash: md5
       md5: 547a792ab8a81655adeb2b02519ce5e3
       size: 3775
@@ -56,9 +56,9 @@ stages:
     outs:
     - path: metrics.json
       hash: md5
-      md5: b4fc87fad5e6d041af4eab487d0eb13f
+      md5: 203fc7d6c784372b9b709412d4becaee
       size: 34
     - path: model.pkl
       hash: md5
-      md5: 0f4f9303289d659782b07a7589834872
+      md5: 3a80251e93227d6f91103a2a773f8dc5
       size: 88586
