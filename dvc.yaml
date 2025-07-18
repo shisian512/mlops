@@ -1,17 +1,17 @@
 stages:
 
   prepare:
-    cmd: python src/data/prepare.py
+    cmd: python prepare.py
     deps:
       - data/train.csv
-      - src/data/prepare.py
+      - prepare.py
     outs:
       - data/prepared.csv
 
   train:
-    cmd: python src/services/train.py
+    cmd: python train.py
     deps:
-      - src/services/train.py
+      - train.py
       - params.yaml
       - data/prepared.csv
     params:
