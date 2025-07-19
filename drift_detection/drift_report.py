@@ -10,4 +10,4 @@ cur = pd.read_csv("../data/current.csv")
 # Generate report
 report = Report(metrics=[DataDriftPreset()])
 report.run(reference_data=ref, current_data=cur)
-report.save_html("report.html")
+report.save_html("../report.html")

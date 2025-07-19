@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('/home/user/mlops/drift_detection/train.csv')
+df = pd.read_csv('../data/train.csv')
 
 df_fake = pd.DataFrame()
 
@@ -17,6 +17,6 @@ for col in df.columns:
     else:
         df_fake[col] = df[col]
 
-df_fake.to_csv("current.csv", index=False)
+df_fake.to_csv("../data/current.csv", index=False)
 
 print("✅ Generated file: current.csv")
