@@ -22,6 +22,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Prepare env file
+      run: |
+        cp .env.template .env
+
     - name: Docker Compose Build
       run: |
         docker compose build
