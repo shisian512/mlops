@@ -1,12 +1,11 @@
-global:
-  resolve_timeout: 1m
-
 route:
-  receiver: 'telegram-notifications'
+    receiver: 'slack'
 
 receivers:
-- name: 'telegram-notifications'
-  telegram_configs:
-  - bot_token: '7655859838:AAHErhOBSHZ_-xNWmmY_XHdfezxP0O4P3cM'
-    chat_id: '<CHAT_ID>'
-    message: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
+    - name: 'slack'
+      slack_configs:
+          - send_resolved: true
+            text: "{{ .CommonAnnotations.description }}"
+            username: 'Prometheus'
+            channel: '#<channel-name>'
+            api_url: 'https://hooks.slack.com/services/<webhook-id>'
