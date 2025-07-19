@@ -64,10 +64,10 @@ jobs:
       run: curl --fail -u admin:admin http://localhost:9090
 
     - name: 🔍 Check cAdvisor
-      run: curl --fail http://localhost:8080
+      run: curl --fail -u admin:admin http://localhost:8080
 
     - name: 🔍 Check Alertmanager
-      run: curl --fail http://localhost:9093
+      run: curl --fail -u admin:admin http://localhost:9093
 
     # ✅ SUCCESS CLEANUP
     - name: ✅ Health Check Passed — Clean Up
