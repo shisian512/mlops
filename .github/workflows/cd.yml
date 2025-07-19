@@ -61,7 +61,7 @@ jobs:
       run: curl --fail http://localhost:3000
 
     - name: 🔍 Check Prometheus
-      run: curl --fail http://localhost:9090
+      run: curl --fail -u admin:admin http://localhost:9090
 
     - name: 🔍 Check cAdvisor
       run: curl --fail http://localhost:8080
