@@ -10,6 +10,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
 MODEL_NAME = "regression_model"
@@ -35,7 +36,14 @@ app = FastAPI(
     description="Predict endpoint for RandomForest regression model",
     version="1.0.0"
 )
-
+instrumentator = Instrumentator(
+    should_group_status_codes=True,
+    should_ignore_untemplated=True,
+    should_respect_env_var=True,
+    excluded_handlers=["/metrics"],
+    should_instrument_requests_inprogress=True,
+)
+instrumentator.instrument(app).expose(app)
 # ─── Request Schema ────────────────────────────────────────────────────────────
 class InputFeatures(BaseModel):
     data: List[List[float]]

@@ -1,0 +1,12 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: 'telegram-notifications'
+
+receivers:
+- name: 'telegram-notifications'
+  telegram_configs:
+  - bot_token: '7655859838:AAHErhOBSHZ_-xNWmmY_XHdfezxP0O4P3cM'
+    chat_id: '<CHAT_ID>'
+    message: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}\n{{ end }}'
