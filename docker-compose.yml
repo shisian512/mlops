@@ -29,6 +29,15 @@ services:
       - .env
     restart: always
 
+  evidently:
+    image: evidently/evidently-service:latest
+    container_name: evidently
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    restart: always
+
   frontend:
     build:
       context: .
