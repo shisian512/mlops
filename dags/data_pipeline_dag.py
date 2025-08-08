@@ -17,8 +17,9 @@ S3_CLEANED_FOLDER = "cleaned_data"
 # Define your DynamoDB table name for the feature store
 DYNAMODB_TABLE_NAME = "your_feature_store_table"
 
-# Define the location of your Spark scripts
-SPARK_SCRIPTS_PATH = "./src"
+# Define the S3 location where you have uploaded your Spark scripts
+# For example: s3://your_s3_bucket_name/scripts/
+S3_SPARK_SCRIPTS_PATH = f"s3://{S3_BUCKET}/scripts"
 
 with DAG(
     dag_id="s3_etl_pipeline_complete",
@@ -31,7 +32,8 @@ with DAG(
     # 1. Data Ingestion Task
     s3_ingestion_task = SparkSubmitOperator(
         task_id="s3_ingestion",
-        application=f"{SPARK_SCRIPTS_PATH}/data_ingestion.py",
+        # Use the S3 path for the Spark application script
+        application=f"{S3_SPARK_SCRIPTS_PATH}/s3_ingestion.py",
         conn_id="spark_default",
         application_args=[S3_BUCKET, S3_RAW_FOLDER],
     )
@@ -39,7 +41,8 @@ with DAG(
     # 2. Data Preprocessing Task
     s3_preprocessing_task = SparkSubmitOperator(
         task_id="s3_preprocessing",
-        application=f"{SPARK_SCRIPTS_PATH}/data_preprocess.py",
+        # Use the S3 path for the Spark application script
+        application=f"{S3_SPARK_SCRIPTS_PATH}/s3_preprocess.py",
         conn_id="spark_default",
         application_args=[S3_BUCKET, S3_PROCESSED_FOLDER, S3_CLEANED_FOLDER],
     )
@@ -47,28 +50,34 @@ with DAG(
     # 3. Data Validation Task
     s3_validation_task = SparkSubmitOperator(
         task_id="s3_data_validation",
-        application=f"{SPARK_SCRIPTS_PATH}/data_validation.py",
+        # Use the S3 path for the Spark application script
+        application=f"{S3_SPARK_SCRIPTS_PATH}/data_validation.py",
         conn_id="spark_default",
         application_args=[S3_BUCKET, S3_CLEANED_FOLDER],
     )
 
     # 4. DVC Tracking Task (BashOperator)
-    # NOTE: You must have DVC configured in your project directory
-    #       (dvc init, dvc remote add) and the folder containing
-    #       the cleaned data must be accessible to DVC.
+    # This command now syncs data from S3, runs DVC, and pushes the changes back.
+    # NOTE: DVC must be installed on the Airflow worker executing this task.
     dvc_track_task = BashOperator(
         task_id="dvc_track_data",
-        bash_command=f"cd {SPARK_SCRIPTS_PATH} && dvc add ../{S3_CLEANED_FOLDER} && dvc push",
+        bash_command=(
+            f"mkdir -p /tmp/dvc_data && "
+            f"aws s3 sync s3://{S3_BUCKET}/{S3_CLEANED_FOLDER}/ /tmp/dvc_data/cleaned_data && "
+            f"cd /tmp/dvc_data && "
+            f"dvc add cleaned_data && dvc push && "
+            f"aws s3 sync .dvc s3://{S3_BUCKET}/dvc_metadata/"
+        ),
     )
 
     # 5. Feature Store Loading Task
     s3_feature_store_task = SparkSubmitOperator(
         task_id="load_feature_store",
-        application=f"{SPARK_SCRIPTS_PATH}/feature_store_load.py",
+        # Use the S3 path for the Spark application script
+        application=f"{S3_SPARK_SCRIPTS_PATH}/feature_store_load.py",
         conn_id="spark_default",
         application_args=[S3_BUCKET, S3_CLEANED_FOLDER, DYNAMODB_TABLE_NAME],
     )
 
     # Define the task dependencies
-    # The pipeline is sequential: ingest -> preprocess -> validate -> track -> load
     s3_ingestion_task >> s3_preprocessing_task >> s3_validation_task >> dvc_track_task >> s3_feature_store_task
