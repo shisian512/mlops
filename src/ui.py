@@ -15,7 +15,6 @@ Usage:
 """
 
 import streamlit as st
-import requests
 from dotenv import load_dotenv
 import os
 
@@ -33,6 +32,7 @@ FEATURE_PROMPTS = [
 # ─── UI Setup ───────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="ML Regression Predictor", layout="centered")
 
+
 def render_input_fields() -> list:
     """
     Render numeric input fields for each feature.
@@ -41,21 +41,17 @@ def render_input_fields() -> list:
         List of float values entered by the user.
     """
     st.write("Enter feature values below:")
-    return [
-        st.number_input(label, value=0.0, format="%f")
-        for label in FEATURE_PROMPTS
-    ]
+    return [st.number_input(label, value=0.0, format="%f") for label in FEATURE_PROMPTS]
 
 
 def get_prediction(features: list) -> float:
     import requests
-    response = requests.post(
-        f"{API_URL}",
-        json={"data": [features]},
-        timeout=TIMEOUT
-    )
+
+    response = requests.post(f"{API_URL}", json={"data": [features]}, timeout=TIMEOUT)
     if response.status_code == 503:
-        raise Exception("No model is currently available. Please train and register a model first.")
+        raise Exception(
+            "No model is currently available. Please train and register a model first."
+        )
     response.raise_for_status()
     return response.json()["predictions"][0]
 
@@ -73,6 +69,7 @@ def main():
             st.success(f"Prediction: {prediction:.4f}")
         except Exception as err:
             st.error(f"Error: {err}")
+
 
 if __name__ == "__main__":
     main()

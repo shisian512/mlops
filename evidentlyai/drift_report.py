@@ -7,9 +7,7 @@ ref_df = pd.read_csv("../data/train.csv")
 cur_df = pd.read_csv("../data/current.csv")
 
 cur_df["y"] = np.random.normal(
-    loc=ref_df["y"].mean(),
-    scale=ref_df["y"].std() * 1.5,
-    size=len(cur_df)
+    loc=ref_df["y"].mean(), scale=ref_df["y"].std() * 1.5, size=len(cur_df)
 )
 ref_df["y"] = ref_df["y"]
 
@@ -19,14 +17,8 @@ if "y" in cur_df.columns:
 if "text" in cur_df.columns:
     cur_df["text"] = cur_df["text"].str.replace("old_phrase", "new_phrase_123")
 
-report = Report(
-    metrics=[DataDriftPreset()],
-    include_tests=True
-)
+report = Report(metrics=[DataDriftPreset()], include_tests=True)
 
-result = report.run(
-    reference_data=ref_df,
-    current_data=cur_df
-)
+result = report.run(reference_data=ref_df, current_data=cur_df)
 
 report.save_html("../report.html")

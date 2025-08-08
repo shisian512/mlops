@@ -4,7 +4,9 @@ from diagrams.onprem.client import Users
 from diagrams.programming.language import Python
 from diagrams.onprem.container import Docker
 
-with Diagram("🚀 MLOps E2E Pipeline", show=False, filename="mlops_e2e_pipeline", outformat="png"):
+with Diagram(
+    "🚀 MLOps E2E Pipeline", show=False, filename="mlops_e2e_pipeline", outformat="png"
+):
 
     user = Users("User")
 
@@ -42,4 +44,10 @@ with Diagram("🚀 MLOps E2E Pipeline", show=False, filename="mlops_e2e_pipeline
     with Cluster("Drift Detection"):
         airflow = Custom("Airflow", "icons/airflow.png")
         evidently = Custom("EvidentlyAI", "icons/evidentlyai.jpg")
-        airflow >> Edge(label="run DAGs") >> evidently >> Edge(label="metrics") >> prometheus
+        (
+            airflow
+            >> Edge(label="run DAGs")
+            >> evidently
+            >> Edge(label="metrics")
+            >> prometheus
+        )

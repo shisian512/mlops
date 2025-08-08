@@ -34,7 +34,7 @@ except Exception as e:
 app = FastAPI(
     title="ML Regression Prediction API",
     description="Predict endpoint for RandomForest regression model",
-    version="1.0.0"
+    version="1.0.0",
 )
 instrumentator = Instrumentator(
     should_group_status_codes=True,
@@ -44,9 +44,12 @@ instrumentator = Instrumentator(
     should_instrument_requests_inprogress=True,
 )
 instrumentator.instrument(app).expose(app)
+
+
 # ─── Request Schema ────────────────────────────────────────────────────────────
 class InputFeatures(BaseModel):
     data: List[List[float]]
+
 
 # ─── Prediction Endpoint ───────────────────────────────────────────────────────
 @app.post("/predict")
@@ -54,14 +57,14 @@ def predict(input: InputFeatures):
     if model is None:
         raise HTTPException(
             status_code=503,
-            detail="No model is currently available. Please train and register a model first."
+            detail="No model is currently available. Please train and register a model first.",
         )
     # Validate input shape
     for record in input.data:
         if len(record) != FEATURE_COUNT:
             raise HTTPException(
                 status_code=422,
-                detail=f"Each record must have exactly {FEATURE_COUNT} features"
+                detail=f"Each record must have exactly {FEATURE_COUNT} features",
             )
     # Prepare DataFrame for prediction
     column_names = [f"feature_{i}" for i in range(FEATURE_COUNT)]
@@ -70,8 +73,5 @@ def predict(input: InputFeatures):
     try:
         preds = model.predict(df)
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Prediction error: {e}"
-        )
+        raise HTTPException(status_code=500, detail=f"Prediction error: {e}")
     return {"predictions": preds.tolist()}
