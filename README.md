@@ -25,28 +25,25 @@ Our end-to-end pipeline is triggered by a code push to the Git repository and or
 
 **CI Pipeline**
 This upstream pipeline is handled by GitHub Actions and focuses on code quality and containerization.
-
-An engineer pushes code to the repository.
-Linting (Flake8, Black) and unit tests (pytest) are run.
-Docker images are built and pushed to Amazon ECR.
+- An engineer pushes code to the repository.
+- Linting (Flake8, Black) and unit tests (pytest) are run.
+- Docker images are built and pushed to Amazon ECR.
 
 **ETL Pipeline (Airflow)**
 This DAG processes and versions the data, ensuring a consistent and reliable feature set for training.
-
-Data Ingestion: A Spark job pulls raw data from Amazon S3.
-Data Preprocessing: Another Spark job cleans and transforms the raw data.
-Data Validation: A validation task ensures the data quality is high before proceeding.
-Data Versioning: The cleaned data is tracked and versioned using DVC.
-Feature Store: The final feature set is loaded into a DynamoDB feature store.
+- Data Ingestion: A Spark job pulls raw data from Amazon S3.
+- Data Preprocessing: Another Spark job cleans and transforms the raw data.
+- Data Validation: A validation task ensures the data quality is high before proceeding.
+- Data Versioning: The cleaned data is tracked and versioned using DVC.
+- Feature Store: The final feature set is loaded into a DynamoDB feature store.
 
 **Training Pipeline (Airflow)**
 This DAG orchestrates the entire model training and promotion lifecycle.
-
-Data Preparation: The DAG uses DVC to fetch a specific, version-controlled dataset from S3 and prepares it for training.
-Model Training: A SageMaker Training Job is triggered to train a new model. All parameters and metrics are logged to our MLflow server.
-Post-Training Analysis: After training, a dedicated task evaluates the model's performance on a test set and generates interpretability reports using SHAP. The results are logged as artifacts in MLflow.
-Model Promotion: A Python script compares the new model (challenger) against the current production model (champion). If the challenger performs better, it is automatically assigned the staging alias in the MLflow Model Registry.
-Deployment Trigger: The final task modifies the Kubernetes deployment configuration file, commits the change to Git, and pushes it. This triggers a GitOps workflow (e.g., via Argo CD) to begin the deployment of the new model.
+- Data Preparation: The DAG uses DVC to fetch a specific, version-controlled dataset from S3 and prepares it for training.
+- Model Training: A SageMaker Training Job is triggered to train a new model. All parameters and metrics are logged to our MLflow server.
+- Post-Training Analysis: After training, a dedicated task evaluates the model's performance on a test set and generates interpretability reports using SHAP. The results are logged as artifacts in MLflow.
+- Model Promotion: A Python script compares the new model (challenger) against the current production model (champion). If the challenger performs better, it is automatically assigned the staging alias in the MLflow Model Registry.
+- Deployment Trigger: The final task modifies the Kubernetes deployment configuration file, commits the change to Git, and pushes it. This triggers a GitOps workflow (e.g., via Argo CD) to begin the deployment of the new model.
 
 ---
 ## ▶️ Quickstart
