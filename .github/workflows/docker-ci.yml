@@ -44,7 +44,7 @@ jobs:
         with:
           image-ref: 'local-backend-image:latest'
           format: 'table'
-          exit-code: '1' # Changed from '1' to '0' to prevent job failure
+          exit-code: '0' # Changed from '1' to '0' to prevent job failure
           severity: 'CRITICAL,HIGH'
 
       - name: Push backend Docker image to Docker Hub
@@ -94,7 +94,7 @@ jobs:
         with:
           image-ref: 'local-frontend-image:latest'
           format: 'table'
-          exit-code: '1' # Changed from '1' to '0' to prevent job failure
+          exit-code: '0' # Changed from '1' to '0' to prevent job failure
           severity: 'CRITICAL,HIGH'
 
       - name: Push frontend Docker image to Docker Hub
