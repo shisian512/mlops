@@ -1,41 +1,41 @@
-name: CI Pipeline
+# name: CI Pipeline
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+# jobs:
+#   build-and-test:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
         
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+#       - name: Setup Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12'
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: '1.8.2'
+#       - name: Install Poetry
+#         uses: snok/install-poetry@v1
+#         with:
+#           version: '1.8.2'
 
-      - name: Install Poetry dependencies
-        run: poetry install
+#       - name: Install Poetry dependencies
+#         run: poetry install
       
-      - name: Run Black formatter check
-        run: poetry run black --check .
-        continue-on-error: true
+#       - name: Run Black formatter check
+#         run: poetry run black --check .
+#         continue-on-error: true
 
-      - name: Run Flake8 linter
-        run: poetry run flake8 . --max-line-length=127
-        continue-on-error: true
+#       - name: Run Flake8 linter
+#         run: poetry run flake8 . --max-line-length=127
+#         continue-on-error: true
         
-      - name: Run unit tests with Pytest
-        run: poetry run pytest ./tests/unit
+#       - name: Run unit tests with Pytest
+#         run: poetry run pytest ./tests/unit

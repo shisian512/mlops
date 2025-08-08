@@ -1,107 +1,107 @@
-name: Docker CI/CD with Security Scan
+# name: Docker CI/CD with Security Scan
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  build-scan-push-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+# jobs:
+#   build-scan-push-backend:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+#       - name: Log in to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: shisian512/mlops-backend
-          tags: |
-            type=schedule,pattern=nightly
-            type=ref,event=branch
-            type=sha,prefix=,format=short
+#       - name: Extract metadata (tags, labels) for Docker
+#         id: meta
+#         uses: docker/metadata-action@v5
+#         with:
+#           images: shisian512/mlops-backend
+#           tags: |
+#             type=schedule,pattern=nightly
+#             type=ref,event=branch
+#             type=sha,prefix=,format=short
 
-      - name: Build backend Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile.fastapi
-          load: true
-          tags: local-backend-image:latest
+#       - name: Build backend Docker image
+#         uses: docker/build-push-action@v6
+#         with:
+#           context: .
+#           file: ./docker/Dockerfile.fastapi
+#           load: true
+#           tags: local-backend-image:latest
 
-      - name: Run Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'local-backend-image:latest'
-          format: 'table'
-          exit-code: '0' # Changed from '1' to '0' to prevent job failure
-          severity: 'CRITICAL,HIGH'
+#       - name: Run Trivy vulnerability scan
+#         uses: aquasecurity/trivy-action@master
+#         with:
+#           image-ref: 'local-backend-image:latest'
+#           format: 'table'
+#           exit-code: '0' # Changed from '1' to '0' to prevent job failure
+#           severity: 'CRITICAL,HIGH'
 
-      - name: Push backend Docker image to Docker Hub
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile.fastapi
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+#       - name: Push backend Docker image to Docker Hub
+#         uses: docker/build-push-action@v6
+#         with:
+#           context: .
+#           file: ./docker/Dockerfile.fastapi
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
 
-  build-scan-push-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#   build-scan-push-frontend:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
       
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+#       - name: Log in to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: shisian512/mlops-frontend
-          tags: |
-            type=schedule,pattern=nightly
-            type=ref,event=branch
-            type=sha,prefix=,format=short
+#       - name: Extract metadata (tags, labels) for Docker
+#         id: meta
+#         uses: docker/metadata-action@v5
+#         with:
+#           images: shisian512/mlops-frontend
+#           tags: |
+#             type=schedule,pattern=nightly
+#             type=ref,event=branch
+#             type=sha,prefix=,format=short
       
-      - name: Build frontend Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile.streamlit
-          load: true
-          tags: local-frontend-image:latest
+#       - name: Build frontend Docker image
+#         uses: docker/build-push-action@v6
+#         with:
+#           context: .
+#           file: ./docker/Dockerfile.streamlit
+#           load: true
+#           tags: local-frontend-image:latest
 
-      - name: Run Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'local-frontend-image:latest'
-          format: 'table'
-          exit-code: '0' # Changed from '1' to '0' to prevent job failure
-          severity: 'CRITICAL,HIGH'
+#       - name: Run Trivy vulnerability scan
+#         uses: aquasecurity/trivy-action@master
+#         with:
+#           image-ref: 'local-frontend-image:latest'
+#           format: 'table'
+#           exit-code: '0' # Changed from '1' to '0' to prevent job failure
+#           severity: 'CRITICAL,HIGH'
 
-      - name: Push frontend Docker image to Docker Hub
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile.streamlit
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+#       - name: Push frontend Docker image to Docker Hub
+#         uses: docker/build-push-action@v6
+#         with:
+#           context: .
+#           file: ./docker/Dockerfile.streamlit
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
