@@ -1,6 +1,5 @@
 name: CI Pipeline
 
-# This workflow is triggered on a push to the main branch or a pull request.
 on:
   push:
     branches:
@@ -17,19 +16,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      # --- Python Environment Setup ---
-      # Sets up Python and installs Poetry for dependency management.
       - name: Setup Python with Poetry
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
           cache: 'poetry'
 
       - name: Install Poetry dependencies
         run: poetry install
       
-      # --- Linting & Formatting ---
-      # Runs Black and Flake8 to enforce code style and catch simple errors.
       - name: Run Black formatter check
         run: poetry run black --check .
         continue-on-error: true
@@ -38,7 +33,5 @@ jobs:
         run: poetry run flake8 . --max-line-length=127
         continue-on-error: true
         
-      # --- Unit Testing ---
-      # Executes all unit tests located in the './tests/unit' directory.
       - name: Run unit tests with Pytest
         run: poetry run pytest ./tests/unit
