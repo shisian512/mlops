@@ -20,6 +20,8 @@ prometheus-fastapi-instrumentator = ">=7.1.0,<8.0.0"
 evidently = ">=0.7.11,<0.8.0"
 apache-airflow = ">=3.0.3,<4.0.0"
 flake8 = "^7.3.0"
+python-dotenv = "^1.1.1"
+pyspark = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4"
