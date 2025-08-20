@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import yaml
 import warnings
+from dotenv import load_dotenv
 import os
 import mlflow
 import sys
@@ -25,6 +26,14 @@ MODEL_PICKLE = "./models/model.pkl"
 FEATURE_COLS = ["feature_0", "feature_1", "feature_2", "feature_3"]
 TARGET_COL = "y"
 METRIC_KEY = "mse" # Renamed for clarity in MLflow
+
+load_dotenv()
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
+
+if not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY or not AWS_ENDPOINT_URL:
+    raise ValueError("AWS credentials or endpoint not set in environment or .env")
 
 # --- MLflow Helper Functions ---
 
@@ -70,12 +79,18 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     """
     cfg = load_config(params_file)
     mlflow_cfg = cfg["mlflow"]
+    print("mlflow_cfg", mlflow_cfg)
     model_cfg = cfg["model"]["hyperparams"]
+    print("model_cfg", model_cfg)
     data_cfg = cfg["data"]
+    print("data_cfg", data_cfg)
     
     # MLflow configuration
     mlflow.set_tracking_uri(mlflow_cfg["tracking_uri"])
+    print("tracking_uri", mlflow_cfg["tracking_uri"])
     mlflow.set_experiment(mlflow_cfg["experiment_name"])
+    mlflow.set_tracking_uri(mlflow_cfg["tracking_uri"])
+    print("experiment", mlflow_cfg["experiment_name"])
     mlflow.sklearn.autolog()
     client = MlflowClient()
     
@@ -84,6 +99,7 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     CHAMPION_ALIAS = "champion"
 
     # Load data
+    print("Loading data......")
     df = pd.read_csv(data_path)
     X = df[FEATURE_COLS]
     y = df[TARGET_COL]
@@ -92,6 +108,7 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     )
     
     # Train the model
+    print("Training......")
     model = RandomForestRegressor(**model_cfg)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
@@ -101,7 +118,8 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     # Log with MLflow and register the model
     with mlflow.start_run() as run:
         mlflow.log_metric(METRIC_KEY, mse)
-        mlflow.sklearn.log_model(model, "model")
+        # mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
         
         # Register the model in MLflow Model Registry
         mv = mlflow.register_model(

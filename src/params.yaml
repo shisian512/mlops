@@ -1,14 +1,15 @@
 mlflow:
-  tracking_uri: "http://mlflow:5000" # Replace with your MLflow server URI
-  experiment_name: "regression_experiment"
-  model_name: "regression_model"
-
+  tracking_uri: http://localhost:5000
+  experiment_name: regression_experiment
+  model_name: regression_model
+  artifact_root: s3://bucket/mlruns
+  
 data:
   test_size: 0.2
   random_state: 42
 
 model:
   hyperparams:
-    n_estimators: 100
-    max_depth: 5
+    n_estimators: 50
+    max_depth: 15
     random_state: 42

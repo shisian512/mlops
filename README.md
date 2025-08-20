@@ -150,13 +150,20 @@ Personal project by [@shisian512](https://github.com/shisian512).
 Fork, scale, and use it for your own MLOps workflow.
 
 ## Notes
-poetry run mlflow server --backend-store-uri postgresql://postgres:postgres@127.0.0.1:5432/postgres --artifacts-destination s3://bucket --host 0.0.0.0 --port
- 5000
+terminal1:
+docker compose -f .\docker-compose-mlflow.yml up
+
+terminal2:
+poetry run mlflow server --backend-store-uri postgresql://postgres:postgres@127.0.0.1:5432/postgres --artifacts-destination s3://bucket --host 0.0.0.0 --port 5000
+
+terminal3:
+dvc repro
 
 
-DVC repro:
+## DVC repro:
 dvc stage add --force -n preprocess -d src/preprocess.py -d data/raw/train.csv -o data/processed/train_processed.csv poetry run python src/preprocess.py data/raw/train.csv data/processed/train_processed.csv
-
 dvc stage add --force -n train -d src/train2.py -d data/processed/train_processed.csv poetry run python src/train2.py data/processed/train_processed.csv
-
 dvc stage add --force -n evaluate -d src/evaluate.py -d data/processed/train_processed.csv poetry run python src/evaluate.py data/processed/train_processed.csv
+
+Train:
+poetry run python src/train.py "C:\Users\PC\Documents\mlops\data\processed\train_processed.csv" "C:\Users\PC\Documents\mlops\src\params.yaml"

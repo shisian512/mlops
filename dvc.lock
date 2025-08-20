@@ -10,31 +10,32 @@ stages:
       size: 17288
     - path: src/preprocess.py
       hash: md5
-      md5: bab657131a6e90b7105a4ca3c230c0f7
-      size: 518
+      md5: 06d13b349cdbbb8a7f69a9037e54917b
+      size: 548
     outs:
     - path: data/processed/train_processed.csv
       hash: md5
-      md5: 41d9e5c19292ce2d72caf6991b3379fe
-      size: 22880
+      md5: 6efca9ff4e4aeaa4c3c19a0f182a1c1d
+      size: 22830
   train:
-    cmd: poetry run python src/train2.py data/processed/train_processed.csv
+    cmd: poetry run python src/train.py data/processed/train_processed.csv 
+      src/params.yaml
     deps:
     - path: data/processed/train_processed.csv
       hash: md5
-      md5: 41d9e5c19292ce2d72caf6991b3379fe
-      size: 22880
-    - path: src/train2.py
+      md5: 6efca9ff4e4aeaa4c3c19a0f182a1c1d
+      size: 22830
+    - path: src/train.py
       hash: md5
-      md5: 328abe6d4ff89fd94599f1137f4c1125
-      size: 677
+      md5: 849fe03d3044e66702b0f0f8288bf16c
+      size: 5341
   evaluate:
     cmd: poetry run python src/evaluate.py data/processed/train_processed.csv
     deps:
     - path: data/processed/train_processed.csv
       hash: md5
-      md5: 41d9e5c19292ce2d72caf6991b3379fe
-      size: 22880
+      md5: 6efca9ff4e4aeaa4c3c19a0f182a1c1d
+      size: 22830
     - path: src/evaluate.py
       hash: md5
       md5: bb40ed8cb4eabaf009649587e12202ad

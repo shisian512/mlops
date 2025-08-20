@@ -12,9 +12,10 @@ if __name__ == "__main__":
     # Load raw
     df = pd.read_csv(input_csv)
 
-    # (No changes — just pass through)
+    # Remove rows with any NaN
+    df = df.dropna()
 
     # Save to processed
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     df.to_csv(output_csv, index=False)
-    print(f"Copied {input_csv} -> {output_csv}")
+    print(f"Processed {input_csv} -> {output_csv} (dropped NaNs)")
