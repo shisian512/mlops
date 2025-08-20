@@ -1,64 +1,41 @@
 schema: '2.0'
 stages:
-  prepare:
-    cmd: python prepare.py
+  preprocess:
+    cmd: poetry run python src/preprocess.py data/raw/train.csv 
+      data/processed/train_processed.csv
     deps:
-    - path: data/train.csv
+    - path: data/raw/train.csv
       hash: md5
-      md5: 6dd21096a9461dde61f8a245001c5ee1
-      size: 16587
-    - path: prepare.py
+      md5: 8eddd3e632d89ebd0e752e22d2801806
+      size: 17288
+    - path: src/preprocess.py
       hash: md5
-      md5: 0521e91693e20cb8780597f221a42e26
-      size: 1423
+      md5: bab657131a6e90b7105a4ca3c230c0f7
+      size: 518
     outs:
-    - path: data/prepared.csv
+    - path: data/processed/train_processed.csv
       hash: md5
-      md5: 0dae78424fb3bb387d39525014495de7
-      size: 22195
+      md5: 41d9e5c19292ce2d72caf6991b3379fe
+      size: 22880
   train:
-    cmd: python train.py
+    cmd: poetry run python src/train2.py data/processed/train_processed.csv
     deps:
-    - path: data/prepared.csv
+    - path: data/processed/train_processed.csv
       hash: md5
-      md5: 0dae78424fb3bb387d39525014495de7
-      size: 22195
-    - path: params.yaml
+      md5: 41d9e5c19292ce2d72caf6991b3379fe
+      size: 22880
+    - path: src/train2.py
       hash: md5
-      md5: 88802ee83115d0007715aceff53cab83
-      size: 2263
-    - path: train.py
+      md5: 328abe6d4ff89fd94599f1137f4c1125
+      size: 677
+  evaluate:
+    cmd: poetry run python src/evaluate.py data/processed/train_processed.csv
+    deps:
+    - path: data/processed/train_processed.csv
       hash: md5
-      md5: 547a792ab8a81655adeb2b02519ce5e3
-      size: 3775
-    params:
-      params.yaml:
-        data.random_state: 45
-        data.test_size: 0.2
-        model.hyperparams:
-          n_estimators: 100
-          bootstrap: true
-          n_jobs: -1
-          random_state: 42
-          max_depth:
-          min_samples_split: 2
-          min_samples_leaf: 1
-          max_leaf_nodes:
-          max_features: 1.0
-          min_weight_fraction_leaf: 0.0
-          min_impurity_decrease: 0.0
-          ccp_alpha: 0.0
-          max_samples: 5
-        validation:
-          oob_score: false
-          verbose: 0
-          warm_start: false
-    outs:
-    - path: metrics.json
+      md5: 41d9e5c19292ce2d72caf6991b3379fe
+      size: 22880
+    - path: src/evaluate.py
       hash: md5
-      md5: 203fc7d6c784372b9b709412d4becaee
-      size: 34
-    - path: model.pkl
-      hash: md5
-      md5: 39a5d5553a19e08a71633079f0488bd2
-      size: 88586
+      md5: bb40ed8cb4eabaf009649587e12202ad
+      size: 449

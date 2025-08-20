@@ -1,35 +1,34 @@
 version: "3.7"
 services:
-  # PostgreSQL database
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mlflowdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
       - 5432:5432
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
-  # MinIO server
+      
+  # http://localhost:9002
   minio:
     image: minio/minio
     expose:
       - "9000"
     ports:
       - "9000:9000"
-      # MinIO Console is available at http://localhost:9002
       - "9002:9002"
     environment:
-      MINIO_ROOT_USER: "minio_user"
-      MINIO_ROOT_PASSWORD: "minio_password"
+      MINIO_ROOT_USER: "${AWS_ACCESS_KEY_ID}"
+      MINIO_ROOT_PASSWORD: "${AWS_SECRET_ACCESS_KEY}"
     healthcheck:
       test: timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
       interval: 1s
       timeout: 10s
       retries: 5
     command: server /data --console-address ":9002"
-  # Create a bucket named "bucket" if it doesn't exist
+
   minio-create-bucket:
     image: minio/mc
     depends_on:
@@ -37,7 +36,7 @@ services:
         condition: service_healthy
     entrypoint: >
       bash -c "
-      mc alias set minio http://minio:9000 minio_user minio_password &&
+      mc alias set minio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} &&
       if ! mc ls minio/bucket; then
         mc mb minio/bucket
       else

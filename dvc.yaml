@@ -1,24 +1,19 @@
 stages:
-
-  prepare:
-    cmd: python prepare.py
+  preprocess:
+    cmd: poetry run python src/preprocess.py data/raw/train.csv 
+      data/processed/train_processed.csv
     deps:
-      - data/train.csv
-      - prepare.py
+    - data/raw/train.csv
+    - src/preprocess.py
     outs:
-      - data/prepared.csv
-
+    - data/processed/train_processed.csv
   train:
-    cmd: python train.py
+    cmd: poetry run python src/train2.py data/processed/train_processed.csv
     deps:
-      - train.py
-      - params.yaml
-      - data/prepared.csv
-    params:
-      - data.test_size
-      - data.random_state
-      - model.hyperparams
-      - validation
-    outs:
-      - model.pkl
-      - metrics.json
+    - data/processed/train_processed.csv
+    - src/train2.py
+  evaluate:
+    cmd: poetry run python src/evaluate.py data/processed/train_processed.csv
+    deps:
+    - data/processed/train_processed.csv
+    - src/evaluate.py

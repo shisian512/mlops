@@ -218,3 +218,4 @@ model.pkl
 
 dvc-storage/
 minio-data/
+postgres-data/
