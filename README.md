@@ -96,7 +96,10 @@ poetry install
 ```bash
 docker-compose up --build
 ```
-
+or compose up for mlflow with postgres and minio
+```bash
+docker compose -f docker-compose-mlflow.yml up -d
+```
 4.  **Access Services**:
 
 | Service      | URL                                                      |
@@ -110,6 +113,20 @@ docker-compose up --build
 | Alertmanager | [http://localhost:9093](https://www.google.com/search?q=http://localhost:9093)           |
 
 -----
+
+4.  **Example of using DVC to track dataset**:
+
+```bash
+dvc init
+```
+
+```bash
+dvc add data/raw/train.csv
+git add data/raw/train.csv.dvc .gitignore
+git commit -m "Track train.csv dataset with DVC"
+```
+
+# source /home/user/.cache/pypoetry/virtualenvs/mlops-Pbe6s2Ym-py3.12/bin/activate
 
 ## 🗺️ Roadmap
 
