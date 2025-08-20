@@ -1,0 +1,13 @@
+FROM python:3.10-slim
+
+# Install dependencies including PostgreSQL client (for pg_isready)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MLflow and psycopg2
+RUN pip install mlflow psycopg2-binary boto3
+
+WORKDIR /app
