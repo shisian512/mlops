@@ -6,9 +6,12 @@ This script handles the initial data cleaning and preprocessing steps before mod
 It currently focuses on handling missing values by removing rows with NaN values.
 """
 
-import pandas as pd
-import sys
+# Standard library imports
 import os
+import sys
+
+# Third-party imports
+import pandas as pd
 
 if __name__ == "__main__":
     # Validate command line arguments

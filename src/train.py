@@ -15,17 +15,20 @@ Configuration is loaded from a params.yaml file, and environment variables
 are used for AWS and MLflow connection settings.
 """
 
+# Standard library imports
+import os
+import sys
+import warnings
+
+# Third-party imports
+import mlflow
 from mlflow import MlflowClient
+import pandas as pd
+from dotenv import load_dotenv
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-import pandas as pd
 import yaml
-import warnings
-from dotenv import load_dotenv
-import os
-import mlflow
-import sys
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

@@ -8,13 +8,16 @@ This module provides a REST API service that:
 4. Provides Prometheus metrics for monitoring
 """
 
+# Standard library imports
+import os
 from typing import List
+
+# Third-party imports
 import mlflow.sklearn
 import pandas as pd
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import os
-from dotenv import load_dotenv
 from prometheus_fastapi_instrumentator import Instrumentator
 
 # ─── Configuration ─────────────────────────────────────────────────────────────

@@ -14,10 +14,16 @@ Typical usage:
     spark-submit feature_store_load.py <s3_bucket> <source_folder> <dynamodb_table_name>
 """
 
+# Standard library imports
 import os
 import sys
-from pyspark.sql import SparkSession
+
+# Third-party imports
+import boto3
 from dotenv import load_dotenv
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import struct
+from pyspark.sql import Row
 
 def run_feature_store_load(s3_bucket, source_folder, dynamodb_table_name):
     """
@@ -76,12 +82,7 @@ def run_feature_store_load(s3_bucket, source_folder, dynamodb_table_name):
             spark.stop()
             sys.exit(1)
     
-        # Import required libraries for DynamoDB interaction
-        # Note: These imports are inside the function to ensure they're available
-        # in the Spark executor environment
-        from pyspark.sql.functions import struct
-        from pyspark.sql import Row
-        import boto3
+        # Create DynamoDB client for interaction
     
         # Function to load a single batch of records into DynamoDB
         # This function runs on each partition of the DataFrame

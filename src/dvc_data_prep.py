@@ -17,9 +17,10 @@ Where:
     - dvc_version: Git commit hash, branch, or tag for the DVC files
 """
 
+# Standard library imports
+import os
 import subprocess
 import sys
-import os
 
 def prepare_dvc_data(dvc_data_path, dvc_version):
     """

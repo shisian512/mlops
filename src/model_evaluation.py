@@ -13,16 +13,20 @@ The evaluation results include both numerical metrics and visual explanations
 of feature importance to support model interpretability requirements.
 """
 
+# Standard library imports
+import json
+import os
+import sys
+
+# Third-party imports
+import matplotlib.pyplot as plt
 import mlflow
 import mlflow.sklearn
+from mlflow import MlflowClient
 import pandas as pd
 import shap
-import json
-import sys
-import os
 import yaml
 from sklearn.metrics import mean_squared_error
-from mlflow import MlflowClient
 
 def load_config(path: str) -> dict:
     """
@@ -132,8 +136,6 @@ def run_model_evaluation(model_name: str, test_data_path: str, run_id: str, para
     print("Model evaluation complete.")
 
 if __name__ == "__main__":
-    # Import matplotlib here to avoid issues with non-GUI backends
-    import matplotlib.pyplot as plt 
     
     # Validate command-line arguments
     if len(sys.argv) != 5:

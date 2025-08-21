@@ -19,10 +19,14 @@ Dependencies:
 - python-dotenv: For loading environment variables
 """
 
+# Standard library imports
+import argparse
 import os
+
+# Third-party imports
+from dotenv import load_dotenv
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, mean
-from dotenv import load_dotenv
 
 def run_s3_preprocess(s3_bucket, source_folder, destination_folder):
     """
@@ -81,7 +85,6 @@ def run_s3_preprocess(s3_bucket, source_folder, destination_folder):
 
 # This part is for running the script directly if needed
 if __name__ == "__main__":
-    import argparse
     
     parser = argparse.ArgumentParser(description="Preprocess data from S3 and save back to S3")
     parser.add_argument("--s3_bucket", type=str, required=True, help="S3 bucket name")

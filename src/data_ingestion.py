@@ -7,9 +7,12 @@ in the ML pipeline. It reads CSV data from a specified S3 bucket and folder,
 and writes it as Parquet format to a processed data location.
 """
 
+# Standard library imports
 import os
-from pyspark.sql import SparkSession
+
+# Third-party imports
 from dotenv import load_dotenv
+from pyspark.sql import SparkSession
 
 def run_s3_ingestion(s3_bucket, s3_folder):
     """

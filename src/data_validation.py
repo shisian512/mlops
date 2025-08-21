@@ -13,10 +13,13 @@ Validation checks include:
 The module uses PySpark for distributed data processing and validation.
 """
 
+# Standard library imports
 import os
 import sys
-from pyspark.sql import SparkSession
+
+# Third-party imports
 from dotenv import load_dotenv
+from pyspark.sql import SparkSession
 
 def run_data_validation(s3_bucket, source_folder):
     """

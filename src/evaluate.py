@@ -4,8 +4,11 @@ This module provides functionality for evaluating machine learning models.
 It loads test data and performs evaluation metrics calculation.
 """
 
-import pandas as pd
+# Standard library imports
 import sys
+
+# Third-party imports
+import pandas as pd
 
 def load_data(path):
     """
