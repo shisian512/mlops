@@ -14,9 +14,13 @@ Usage:
     streamlit run ui.py
 """
 
+# Standard library imports
+import os
+
+# Third-party imports
+import requests
 import streamlit as st
 from dotenv import load_dotenv
-import os
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
 load_dotenv()
@@ -45,8 +49,6 @@ def render_input_fields() -> list:
 
 
 def get_prediction(features: list) -> float:
-    import requests
-
     response = requests.post(f"{API_URL}", json={"data": [features]}, timeout=TIMEOUT)
     if response.status_code == 503:
         raise Exception(

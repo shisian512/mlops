@@ -1,22 +1,31 @@
-"""
-FastAPI application exposing an endpoint for making predictions
+"""FastAPI application exposing an endpoint for making predictions
 using a champion-aliased RandomForest regression model loaded from MLflow.
+
+This module provides a REST API service that:
+1. Loads a pre-trained ML model from MLflow Model Registry
+2. Exposes an endpoint for making predictions
+3. Includes input validation and error handling
+4. Provides Prometheus metrics for monitoring
 """
 
+# Standard library imports
+import os
 from typing import List
+
+# Third-party imports
 import mlflow.sklearn
 import pandas as pd
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import os
-from dotenv import load_dotenv
 from prometheus_fastapi_instrumentator import Instrumentator
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
-MODEL_NAME = "regression_model"
-MODEL_ALIAS = "champion"
-MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
-FEATURE_COUNT = 4  # Number of features expected per record
+# Model configuration parameters
+MODEL_NAME = "regression_model"  # Name of the registered model in MLflow
+MODEL_ALIAS = "champion"  # Using the champion alias ensures we always use the best model
+MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"  # MLflow model URI format
+FEATURE_COUNT = 4  # Number of features expected per input record
 
 load_dotenv()
 mlflow_uri = os.getenv("MLFLOW_TRACKING_URI")
@@ -45,15 +54,37 @@ instrumentator = Instrumentator(
 )
 instrumentator.instrument(app).expose(app)
 
-
 # ─── Request Schema ────────────────────────────────────────────────────────────
 class InputFeatures(BaseModel):
+    """
+    Pydantic model defining the expected request body format.
+    
+    Attributes:
+        data (List[List[float]]): A list of records, where each record is a list of
+                                  floating-point feature values. Each record must
+                                  contain exactly FEATURE_COUNT features.
+    """
     data: List[List[float]]
-
 
 # ─── Prediction Endpoint ───────────────────────────────────────────────────────
 @app.post("/predict")
 def predict(input: InputFeatures):
+    """
+    Generate predictions using the loaded ML model.
+    
+    This endpoint accepts a batch of records, validates them, and returns
+    predictions for each record.
+    
+    Args:
+        input (InputFeatures): The request body containing records to predict.
+        
+    Returns:
+        dict: A dictionary with a 'predictions' key containing the model's predictions.
+        
+    Raises:
+        HTTPException: If the model is not available, input format is invalid,
+                      or prediction fails.
+    """
     if model is None:
         raise HTTPException(
             status_code=503,
