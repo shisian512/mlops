@@ -2,6 +2,6 @@
     remote = myremote
 ['remote "myremote"']
     url = s3://bucket/dvcstore
-    endpointurl = http://localhost:9000
-    access_key_id = minio_user
-    secret_access_key = minio_password
+    endpointurl = ${AWS_ENDPOINT_URL}
+    access_key_id = ${AWS_ACCESS_KEY_ID}
+    secret_access_key = ${AWS_SECRET_ACCESS_KEY}

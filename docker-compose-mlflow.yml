@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   postgres:
     image: postgres:13
@@ -7,27 +6,39 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-      
-  # http://localhost:9002
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mlops
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+  # MinIO Web UI: http://localhost:9002
   minio:
     image: minio/minio
-    expose:
-      - "9000"
-    ports:
-      - "9000:9000"
-      - "9002:9002"
+    env_file:
+      - .env
     environment:
       MINIO_ROOT_USER: "${AWS_ACCESS_KEY_ID}"
       MINIO_ROOT_PASSWORD: "${AWS_SECRET_ACCESS_KEY}"
-    healthcheck:
-      test: timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
-      interval: 1s
-      timeout: 10s
-      retries: 5
+    volumes:
+      - minio_data:/data
     command: server /data --console-address ":9002"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "9000:9000"
+      - "9002:9002"
+    networks:
+      - mlops
 
   minio-create-bucket:
     image: minio/mc
@@ -36,25 +47,40 @@ services:
         condition: service_healthy
     entrypoint: >
       bash -c "
-      mc alias set minio ${AWS_ENDPOINT_URL} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} &&
+      mc alias set minio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} &&
       if ! mc ls minio/bucket; then
         mc mb minio/bucket
       else
         echo 'bucket already exists'
       fi
       "
+    networks:
+      - mlops
 
   mlflow:
     build:
       context: ./docker
       dockerfile: Dockerfile.mlflow
+    command: >
+      mlflow server
+      --backend-store-uri ${POSTGRES_URI}
+      --artifacts-destination ${MLFLOW_ARTIFACTS_URI}
+      --host 0.0.0.0
+      --port 5000
     depends_on:
       - postgres
       - minio
     ports:
       - "5000:5000"
-    environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL}
+    env_file:
+      - .env
+    networks:
+      - mlops
 
+volumes:
+  postgres_data:
+  minio_data:
+
+networks:
+  mlops:
+    driver: bridge
