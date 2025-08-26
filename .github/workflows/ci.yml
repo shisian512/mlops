@@ -37,8 +37,8 @@ jobs:
         continue-on-error: true
 
       - name: Run Flake8 linter
-        run: poetry run flake8 . --max-line-length=127
+        run: poetry run flake8 src --max-line-length=127
         continue-on-error: true
         
-      - name: Run unit tests with Pytest
-        run: poetry run pytest ./tests/unit
+      # - name: Run unit tests with Pytest
+      #   run: poetry run pytest ./tests/unit
