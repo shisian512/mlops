@@ -6,17 +6,17 @@ stages:
     deps:
     - path: data/raw/train.csv
       hash: md5
-      md5: 8eddd3e632d89ebd0e752e22d2801806
-      size: 17288
+      md5: 6dd21096a9461dde61f8a245001c5ee1
+      size: 16587
     - path: src/preprocess.py
       hash: md5
-      md5: 06d13b349cdbbb8a7f69a9037e54917b
-      size: 548
+      md5: 64a5ebf9aee5628ac1a7705728afab87
+      size: 527
     outs:
     - path: data/processed/train_processed.csv
       hash: md5
-      md5: 6efca9ff4e4aeaa4c3c19a0f182a1c1d
-      size: 22830
+      md5: ddd4954cb8fda4144da94673672dd615
+      size: 22130
   train:
     cmd: poetry run python src/train.py data/processed/train_processed.csv 
       src/params.yaml

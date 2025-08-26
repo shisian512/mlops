@@ -29,6 +29,7 @@ boto3 = "^1.40.13"
 pytest = "^7.4"
 mypy = "^1.10"
 black = "^24.3"
+dvc = "^3.62.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
