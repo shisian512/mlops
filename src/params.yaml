@@ -1,5 +1,5 @@
 mlflow:
-  tracking_uri: http://mlflow:5000
+  tracking_uri: http://localhost:5000
   experiment_name: regression_experiment
   model_name: regression_model
   artifact_root: s3://bucket/mlruns
