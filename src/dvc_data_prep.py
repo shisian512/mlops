@@ -3,16 +3,17 @@ import subprocess
 import sys
 import os
 
+
 def prepare_dvc_data(dvc_data_path, dvc_version):
     """
     Checks out a specific DVC version and pulls the data.
-    
+
     Args:
         dvc_data_path (str): The path to the DVC-tracked folder.
         dvc_version (str): The DVC version (git commit hash or tag) to pull.
     """
     print(f"Preparing data version '{dvc_version}' for training...")
-    
+
     # Check if DVC is installed and configured
     try:
         subprocess.run(["dvc", "--version"], check=True, capture_output=True)
@@ -35,13 +36,13 @@ def prepare_dvc_data(dvc_data_path, dvc_version):
     except subprocess.CalledProcessError as e:
         print(f"Error executing DVC or Git command: {e.stderr.decode()}")
         sys.exit(1)
-    
+
     print("Data preparation complete.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python dvc_data_prep.py <dvc_data_path> <dvc_version>")
         sys.exit(1)
-    
-    prepare_dvc_data(sys.argv[1], sys.argv[2])
 
+    prepare_dvc_data(sys.argv[1], sys.argv[2])

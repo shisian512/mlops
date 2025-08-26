@@ -25,7 +25,7 @@ METRICS_PATH = "./metrics.json"
 MODEL_PICKLE = "./models/model.pkl"
 FEATURE_COLS = ["feature_0", "feature_1", "feature_2", "feature_3"]
 TARGET_COL = "y"
-METRIC_KEY = "mse" # Renamed for clarity in MLflow
+METRIC_KEY = "mse"  # Renamed for clarity in MLflow
 
 load_dotenv()
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
@@ -37,10 +37,12 @@ if not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY or not AWS_ENDPOINT_URL:
 
 # --- MLflow Helper Functions ---
 
+
 def load_config(path: str) -> dict:
     """Loads YAML configuration file."""
     with open(path, "r") as f:
         return yaml.safe_load(f)
+
 
 def get_metric_for_alias(model_name: str, alias: str, metric_key: str) -> float:
     """Gets the metric value for a given model alias."""
@@ -57,6 +59,7 @@ def get_metric_for_alias(model_name: str, alias: str, metric_key: str) -> float:
         print(f"Could not get metric for alias '{alias}': {e}")
         return float("inf")
 
+
 def champion_challenger_test(model_name: str, metric_key: str) -> bool:
     """Compares challenger and champion metrics."""
     champ_val = get_metric_for_alias(model_name, CHAMPION_ALIAS, metric_key)
@@ -65,13 +68,16 @@ def champion_challenger_test(model_name: str, metric_key: str) -> bool:
     print(f"Current Challenger {metric_key}: {chall_val:.6f}")
     return chall_val < champ_val
 
+
 def promote_alias(model_name: str, alias: str, version: str):
     """Promotes a model version to a specific alias."""
     client = MlflowClient()
     client.set_registered_model_alias(name=model_name, alias=alias, version=version)
     print(f"Alias '{alias}' → version {version}")
 
+
 # --- Main Training Function ---
+
 
 def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     """
@@ -84,7 +90,7 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     print("model_cfg", model_cfg)
     data_cfg = cfg["data"]
     print("data_cfg", data_cfg)
-    
+
     # MLflow configuration
     mlflow.set_tracking_uri(mlflow_cfg["tracking_uri"])
     print("tracking_uri", mlflow_cfg["tracking_uri"])
@@ -93,7 +99,7 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     print("experiment", mlflow_cfg["experiment_name"])
     mlflow.sklearn.autolog()
     client = MlflowClient()
-    
+
     MODEL_NAME = mlflow_cfg["model_name"]
     CHALLENGER_ALIAS = "challenger"
     CHAMPION_ALIAS = "champion"
@@ -106,7 +112,7 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=data_cfg["test_size"], random_state=data_cfg["random_state"]
     )
-    
+
     # Train the model
     print("Training......")
     model = RandomForestRegressor(**model_cfg)
@@ -120,27 +126,29 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
         mlflow.log_metric(METRIC_KEY, mse)
         # mlflow.sklearn.log_model(model, "model")
         mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
-        
+
         # Register the model in MLflow Model Registry
         mv = mlflow.register_model(
             model_uri=f"runs:/{run.info.run_id}/model", name=MODEL_NAME
         )
-        
+
         # Assign the 'challenger' alias to the new model version
         client.set_registered_model_alias(MODEL_NAME, CHALLENGER_ALIAS, mv.version)
-        print(f"New model registered as version {mv.version} and assigned '{CHALLENGER_ALIAS}' alias.")
+        print(
+            f"New model registered as version {mv.version} and assigned '{CHALLENGER_ALIAS}' alias."
+        )
 
         # This part of the logic is better handled by a separate Airflow task
         # to ensure the training job finishes before checking and promoting.
         # if champion_challenger_test(MODEL_NAME, METRIC_KEY):
         #     promote_alias(MODEL_NAME, CHAMPION_ALIAS, mv.version)
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python train.py <path_to_data> [path_to_params.yaml]")
         sys.exit(1)
-    
+
     data_path = sys.argv[1]
     params_path = sys.argv[2] if len(sys.argv) > 2 else PARAMS_FILE
     run_training_job(data_path, params_path)
-

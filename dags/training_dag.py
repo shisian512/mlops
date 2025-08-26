@@ -19,20 +19,23 @@ S3_CLEANED_DATA_PATH = "cleaned_data"
 DVC_DATA_VERSION = "v1.0"
 
 # AWS and MLflow configuration
-S3_BUCKET = "your-sagemaker-bucket" # Bucket SageMaker can access
-SAGEMAKER_ROLE_ARN = "arn:aws:iam::123456789012:role/service-role/AmazonSageMaker-ExecutionRole"
+S3_BUCKET = "your-sagemaker-bucket"  # Bucket SageMaker can access
+SAGEMAKER_ROLE_ARN = (
+    "arn:aws:iam::123456789012:role/service-role/AmazonSageMaker-ExecutionRole"
+)
 SAGEMAKER_INSTANCE_TYPE = "ml.m5.large"
 S3_TEST_DATA_PATH = f"s3://{S3_BUCKET}/sagemaker/test-data/{DVC_DATA_VERSION}/test.csv"
 S3_TRAINING_DATA_PATH = f"s3://{S3_BUCKET}/sagemaker/training-data/{DVC_DATA_VERSION}/"
 PARAMS_FILE_PATH = f"{DVC_PROJECT_ROOT}/params.yaml"
 
 # Load MLflow config from params.yaml
-with open(PARAMS_FILE_PATH, 'r') as f:
+with open(PARAMS_FILE_PATH, "r") as f:
     params_config = yaml.safe_load(f)
-    MLFLOW_CFG = params_config['mlflow']
-    MODEL_NAME = MLFLOW_CFG['model_name']
-    MLFLOW_TRACKING_URI = MLFLOW_CFG['tracking_uri']
+    MLFLOW_CFG = params_config["mlflow"]
+    MODEL_NAME = MLFLOW_CFG["model_name"]
+    MLFLOW_TRACKING_URI = MLFLOW_CFG["tracking_uri"]
     METRIC_KEY = "evaluation_mse"
+
 
 # --- Helper functions for model promotion and deployment ---
 def get_metric_for_alias(model_name: str, alias: str, metric_key: str) -> float:
@@ -44,11 +47,12 @@ def get_metric_for_alias(model_name: str, alias: str, metric_key: str) -> float:
             if alias in v.aliases:
                 run_id = v.run_id
                 metrics = client.get_run(run_id).data.metrics
-                return metrics.get(metric_key, float('inf'))
-        return float('inf')
+                return metrics.get(metric_key, float("inf"))
+        return float("inf")
     except Exception as e:
         print(f"Could not get metric for alias '{alias}': {e}")
-        return float('inf')
+        return float("inf")
+
 
 def promote_challenger_if_better(model_name: str, metric_key: str):
     """
@@ -62,28 +66,41 @@ def promote_challenger_if_better(model_name: str, metric_key: str):
 
     chall_val = get_metric_for_alias(model_name, CHALLENGER_ALIAS, metric_key)
     champ_val = get_metric_for_alias(model_name, CHAMPION_ALIAS, metric_key)
-    
+
     print(f"Current Champion {metric_key}: {champ_val:.6f}")
     print(f"Current Challenger {metric_key}: {chall_val:.6f}")
-    
+
     if chall_val < champ_val:
-        print("Challenger performance is better than the champion. Promoting challenger to Staging.")
-        
+        print(
+            "Challenger performance is better than the champion. Promoting challenger to Staging."
+        )
+
         # Get the version of the challenger model
-        challenger_version = client.get_model_version_by_alias(model_name, CHALLENGER_ALIAS).version
-        
+        challenger_version = client.get_model_version_by_alias(
+            model_name, CHALLENGER_ALIAS
+        ).version
+
         # Remove old staging alias if it exists
         try:
-            old_staging_version = client.get_model_version_by_alias(model_name, STAGING_ALIAS).version
-            client.delete_registered_model_alias(name=model_name, alias=STAGING_ALIAS, version=old_staging_version)
+            old_staging_version = client.get_model_version_by_alias(
+                model_name, STAGING_ALIAS
+            ).version
+            client.delete_registered_model_alias(
+                name=model_name, alias=STAGING_ALIAS, version=old_staging_version
+            )
         except Exception:
-            pass # No old staging model exists
+            pass  # No old staging model exists
 
         # Promote the challenger to the 'Staging' alias
-        client.set_registered_model_alias(name=model_name, alias=STAGING_ALIAS, version=challenger_version)
+        client.set_registered_model_alias(
+            name=model_name, alias=STAGING_ALIAS, version=challenger_version
+        )
         print(f"Model version {challenger_version} promoted to '{STAGING_ALIAS}'.")
     else:
-        print("Challenger performance is not better than the champion. No promotion to Staging.")
+        print(
+            "Challenger performance is not better than the champion. No promotion to Staging."
+        )
+
 
 with DAG(
     dag_id="sagemaker_training_pipeline",
@@ -92,7 +109,7 @@ with DAG(
     catchup=False,
     tags=["sagemaker", "dvc", "training", "mlflow", "cd"],
 ) as dag:
-    
+
     # 1. DVC Data Preparation Task
     dvc_data_prep_task = BashOperator(
         task_id="dvc_data_preparation",
@@ -113,7 +130,7 @@ with DAG(
             f"{S3_TEST_DATA_PATH}"
         ),
     )
-    
+
     # 3. SageMaker Model Training Task
     sagemaker_training_task = SageMakerTrainingOperator(
         task_id="sagemaker_model_training",
@@ -144,9 +161,7 @@ with DAG(
                 "InstanceType": SAGEMAKER_INSTANCE_TYPE,
                 "VolumeSizeInGB": 10,
             },
-            "StoppingCondition": {
-                "MaxRuntimeInSeconds": 3600
-            },
+            "StoppingCondition": {"MaxRuntimeInSeconds": 3600},
             "HyperParameters": {
                 "mlflow_tracking_uri": MLFLOW_TRACKING_URI,
                 "mlflow_experiment_name": MLFLOW_CFG["experiment_name"],
@@ -158,8 +173,8 @@ with DAG(
             },
             "Code": {
                 "S3Source": f"s3://{S3_BUCKET}/sagemaker/scripts/train.tar.gz",
-                "TrainingInputMode": "File"
-            }
+                "TrainingInputMode": "File",
+            },
         },
     )
 
@@ -199,7 +214,7 @@ with DAG(
             f"echo 'Updating deployment manifest...' && "
             f"echo 'Committing and pushing changes to Git repository...' && "
             f"git add deployment.yaml && "
-            f"git commit -m 'Deploying new model from run {{ ti.xcom_pull(task_ids=\"sagemaker_model_training\", key=\"return_value\") }}' && "
+            f'git commit -m \'Deploying new model from run {{ ti.xcom_pull(task_ids="sagemaker_model_training", key="return_value") }}\' && '
             f"git push"
             # NOTE: Your git repository must be configured with a remote, and the Airflow
             # worker must have the necessary credentials to push.

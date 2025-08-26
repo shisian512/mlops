@@ -24,11 +24,11 @@ S3_SPARK_SCRIPTS_PATH = f"s3://{S3_BUCKET}/scripts"
 with DAG(
     dag_id="s3_etl_pipeline_complete",
     start_date=pendulum.datetime(2025, 1, 1, tz="UTC"),
-    schedule_interval='@daily',
+    schedule_interval="@daily",
     catchup=False,
     tags=["s3", "pyspark", "data_ingestion", "dvc", "feature_store"],
 ) as dag:
-    
+
     # 1. Data Ingestion Task
     s3_ingestion_task = SparkSubmitOperator(
         task_id="s3_ingestion",
@@ -80,4 +80,10 @@ with DAG(
     )
 
     # Define the task dependencies
-    s3_ingestion_task >> s3_preprocessing_task >> s3_validation_task >> dvc_track_task >> s3_feature_store_task
+    (
+        s3_ingestion_task
+        >> s3_preprocessing_task
+        >> s3_validation_task
+        >> dvc_track_task
+        >> s3_feature_store_task
+    )
