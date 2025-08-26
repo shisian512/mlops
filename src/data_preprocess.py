@@ -1,4 +1,24 @@
-# src/s3_preprocess.py
+"""
+data_preprocess.py
+
+This module handles data preprocessing operations on S3-stored Parquet data using PySpark.
+It performs the following operations:
+1. Connects to an S3 bucket using AWS credentials from environment variables
+2. Reads Parquet data from a specified source folder
+3. Performs data cleaning operations, specifically imputing missing numeric values with column means
+4. Writes the cleaned data back to S3 in a destination folder
+
+The preprocessing is essential for ensuring data quality before model training.
+
+Environment Variables Required:
+- AWS_ACCESS_KEY_ID: AWS access key for S3 bucket access
+- AWS_SECRET_ACCESS_KEY: AWS secret key for S3 bucket access
+
+Dependencies:
+- pyspark: For distributed data processing
+- python-dotenv: For loading environment variables
+"""
+
 import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, mean
@@ -6,7 +26,19 @@ from dotenv import load_dotenv
 
 def run_s3_preprocess(s3_bucket, source_folder, destination_folder):
     """
-    Reads Parquet data from S3, preprocesses it, and writes the output back to S3.
+    Reads Parquet data from S3, preprocesses it by imputing missing values, and writes the output back to S3.
+    
+    Args:
+        s3_bucket (str): The name of the S3 bucket containing the data
+        source_folder (str): The folder path within the S3 bucket where source data is stored
+        destination_folder (str): The folder path within the S3 bucket where cleaned data will be written
+        
+    Returns:
+        None: The function writes the processed data to S3 and logs processing information
+        
+    Raises:
+        ValueError: If AWS credentials are not found in environment variables
+        Exception: For any errors during Spark processing or S3 operations
     """
     # Load environment variables from .env file
     load_dotenv()
@@ -14,6 +46,9 @@ def run_s3_preprocess(s3_bucket, source_folder, destination_folder):
     # Get the credentials from the environment variables
     aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
     aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+    
+    if not aws_access_key or not aws_secret_key:
+        raise ValueError("AWS credentials not found in environment variables")
 
     # Define configurations for S3 access
     spark = SparkSession.builder \
@@ -46,4 +81,13 @@ def run_s3_preprocess(s3_bucket, source_folder, destination_folder):
 
 # This part is for running the script directly if needed
 if __name__ == "__main__":
-    run_s3_preprocess("your_s3_bucket_name", "processed_data", "cleaned_data")
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Preprocess data from S3 and save back to S3")
+    parser.add_argument("--s3_bucket", type=str, required=True, help="S3 bucket name")
+    parser.add_argument("--source_folder", type=str, required=True, help="Source folder in S3 bucket")
+    parser.add_argument("--destination_folder", type=str, required=True, help="Destination folder in S3 bucket")
+    
+    args = parser.parse_args()
+    
+    run_s3_preprocess(args.s3_bucket, args.source_folder, args.destination_folder)
