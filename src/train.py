@@ -5,6 +5,7 @@ for a RandomForest regression model using MLflow.
 """
 
 from mlflow import MlflowClient
+from mlflow.models.signature import infer_signature
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -122,10 +123,17 @@ def run_training_job(data_path: str, params_file: str = PARAMS_FILE):
     print(f"Test MSE: {mse:.6f}")
 
     # Log with MLflow and register the model
+    signature = infer_signature(X_train, model.predict(X_train))
+    # mlflow.sklearn.log_model(
+    #     sk_model=model,
+    #     name="regression_model",
+    #     signature=signature,
+    #     input_example=X_train.iloc[:5]
+    # )
     with mlflow.start_run() as run:
         mlflow.log_metric(METRIC_KEY, mse)
         # mlflow.sklearn.log_model(model, "model")
-        mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
+        mlflow.sklearn.log_model(sk_model=model, name="model", signature=signature, input_example=X_train.iloc[:5])
 
         # Register the model in MLflow Model Registry
         mv = mlflow.register_model(
